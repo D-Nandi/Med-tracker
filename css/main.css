@@ -205,6 +205,7 @@ tbody tr:hover { background: var(--color-muted); }
 .timeline-dot { position: absolute; left: -24px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-surface); box-shadow: 0 0 0 2px var(--color-primary); }
 .timeline-dot--green { background: var(--color-accent); box-shadow: 0 0 0 2px var(--color-accent); }
 .timeline-dot--amber { background: var(--color-warning); box-shadow: 0 0 0 2px var(--color-warning); }
+.timeline-dot--rose  { background: var(--color-period, #e11d48); box-shadow: 0 0 0 2px var(--color-period, #e11d48); }
 .timeline-date { font-size: 0.75rem; color: var(--color-muted-text); margin-bottom: 4px; }
 .timeline-content { background: var(--color-muted); border-radius: var(--radius-md); padding: 12px 14px; }
 .timeline-title { font-weight: 600; font-size: 0.9rem; color: var(--color-foreground); }
@@ -268,3 +269,889 @@ tbody tr:hover { background: var(--color-muted); }
 @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity var(--transition); } .sidebar-overlay.show { opacity: 1; pointer-events: all; } .main-content { margin-left: 0; } .menu-toggle { display: flex; } .stats-grid { grid-template-columns: 1fr 1fr; } .page-content { padding: 16px; } .search-bar { min-width: 140px; } #toast-container { left: 20px; right: 20px; max-width: none; } .modal { padding: 24px 20px; } .notif-panel { width: calc(100vw - 40px); right: -60px; } }
 @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } .medicine-grid { grid-template-columns: 1fr; } .reports-grid { grid-template-columns: 1fr 1fr; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* =============================================
+   PERIOD TRACKER — Design Tokens & Components
+   ============================================= */
+
+:root {
+  --color-period:     #e11d48;   /* rose-600  — menstruation */
+  --color-period-light: #ffe4e6; /* rose-100  — period day bg */
+  --color-fertile:    #0891B2;   /* cyan-600  — fertile window (reuse primary) */
+  --color-fertile-light: #cffafe;/* cyan-100 */
+  --color-ovulation:  #059669;   /* emerald-600 */
+  --color-ovulation-light: #d1fae5;
+  --color-pms:        #d97706;   /* amber-600 (reuse warning) */
+  --color-pms-light:  #fef3c7;
+  --color-luteal:     #7c3aed;   /* violet-700 */
+  --color-luteal-light: #ede9fe;
+  --color-prediction: #fda4af;   /* rose-300  — predicted days */
+  --color-today-ring: #0891B2;
+}
+
+/* ── Privacy notice ──────────────────────────────────────── */
+.period-privacy-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #fff1f2 0%, #fce7f3 100%);
+  border: 1px solid #fecdd3;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  color: #9f1239;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.period-privacy-notice svg { flex-shrink: 0; color: var(--color-period); }
+
+/* ── Prediction disclaimer ───────────────────────────────── */
+.period-disclaimer {
+  font-size: 0.8125rem;
+  color: var(--color-muted-text);
+  background: var(--color-muted);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ── Cycle stats row ─────────────────────────────────────── */
+.cycle-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.cycle-stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.cycle-stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.cycle-stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: var(--font-primary);
+  color: var(--color-period);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.cycle-stat-value.upcoming { color: var(--color-fertile); }
+.cycle-stat-value.neutral  { color: var(--color-foreground); }
+.cycle-stat-label {
+  font-size: 0.8125rem;
+  color: var(--color-muted-text);
+  font-weight: 500;
+}
+
+/* ── Calendar navigation ─────────────────────────────────── */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.calendar-month-label {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+.calendar-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.calendar-nav-btn:hover { background: var(--color-muted); border-color: var(--color-primary); }
+
+/* ── Calendar day-of-week header ─────────────────────────── */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-text);
+  padding: 4px 0;
+}
+
+/* ── Calendar grid ───────────────────────────────────────── */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all var(--transition);
+  position: relative;
+  min-height: 44px;
+  color: var(--color-text);
+  user-select: none;
+}
+.cal-day:hover:not(.cal-day--empty):not(.cal-day--future) {
+  border-color: var(--color-period);
+  background: var(--color-period-light);
+  transform: scale(1.05);
+}
+.cal-day--empty { cursor: default; }
+.cal-day--future { cursor: default; color: var(--color-muted-text); opacity: 0.5; }
+.cal-day--today {
+  border-color: var(--color-today-ring);
+  background: var(--color-primary-light);
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+/* Period logged day */
+.cal-day--period {
+  background: var(--color-period);
+  color: #fff;
+  border-color: var(--color-period);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(225,29,72,0.30);
+}
+.cal-day--period:hover {
+  background: #be123c;
+  border-color: #be123c;
+  transform: scale(1.05);
+}
+/* Predicted period window */
+.cal-day--predicted {
+  background: var(--color-period-light);
+  border-color: var(--color-prediction);
+  color: var(--color-period);
+  font-weight: 600;
+}
+/* Fertile window */
+.cal-day--fertile {
+  background: var(--color-fertile-light);
+  border-color: var(--color-fertile);
+  color: var(--color-primary-dark);
+}
+/* Ovulation */
+.cal-day--ovulation {
+  background: var(--color-ovulation-light);
+  border-color: var(--color-ovulation);
+  color: #065f46;
+  font-weight: 700;
+}
+/* PMS / luteal */
+.cal-day--pms {
+  background: var(--color-pms-light);
+  border-color: var(--color-pms);
+  color: #92400e;
+}
+/* Small flow-level dot at bottom of period cell */
+.cal-day .flow-dot {
+  position: absolute;
+  bottom: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+}
+
+/* Non-period symptom / mood day indicator */
+.cal-day--symptom-only {
+  position: relative;
+  border-color: #cbd5e1;
+}
+.cal-day .symptom-logged-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8b5cf6; /* violet indicator */
+  box-shadow: 0 0 0 1.5px var(--color-surface);
+}
+.cal-day .mood-mini-icon {
+  position: absolute;
+  bottom: 2px;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+/* ── Phase legend ────────────────────────────────────────── */
+.phase-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: var(--color-muted);
+  border-radius: var(--radius-md);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.legend-dot--period   { background: var(--color-period); }
+.legend-dot--predicted{ background: var(--color-period-light); border: 1.5px solid var(--color-prediction); }
+.legend-dot--fertile  { background: var(--color-fertile-light); border: 1.5px solid var(--color-fertile); }
+.legend-dot--ovulation{ background: var(--color-ovulation-light); border: 1.5px solid var(--color-ovulation); }
+.legend-dot--pms      { background: var(--color-pms-light); border: 1.5px solid var(--color-pms); }
+.legend-dot--symptom  { background: #8b5cf6; border-radius: 50%; width: 10px; height: 10px; }
+.legend-dot--today    { background: var(--color-primary-light); border: 1.5px solid var(--color-primary); }
+
+/* ── Log modal — flow selector ───────────────────────────── */
+.flow-selector {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.flow-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted-text);
+  min-height: 44px;
+}
+.flow-btn:hover { border-color: var(--color-period); background: var(--color-period-light); color: var(--color-period); }
+.flow-btn.selected {
+  border-color: var(--color-period);
+  background: var(--color-period);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(225,29,72,0.3);
+}
+.flow-btn .flow-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* ── Mood selector ───────────────────────────────────────── */
+.mood-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted-text);
+  min-height: 44px;
+}
+.mood-btn:hover { border-color: var(--color-primary); background: var(--color-primary-light); }
+.mood-btn.selected { border-color: var(--color-primary); background: var(--color-primary-light); color: var(--color-primary); }
+.mood-btn .mood-icon { font-size: 1.4rem; }
+
+/* ── Symptom chip toggles ────────────────────────────────── */
+.symptom-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.symptom-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+  min-height: 36px;
+  user-select: none;
+}
+.symptom-chip:hover { border-color: var(--color-period); color: var(--color-period); background: var(--color-period-light); }
+.symptom-chip.active {
+  background: var(--color-period);
+  border-color: var(--color-period);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Pain level slider ───────────────────────────────────── */
+.pain-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.pain-slider {
+  flex: 1;
+  accent-color: var(--color-period);
+  height: 6px;
+  cursor: pointer;
+}
+.pain-value-label {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-period);
+  font-family: var(--font-primary);
+}
+
+/* ── Dashboard cycle overview mini-strip ─────────────────── */
+.cycle-overview-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cycle-mini-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--color-muted);
+  border-radius: var(--radius-md);
+}
+.cycle-mini-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-primary);
+  color: var(--color-period);
+}
+.cycle-mini-label {
+  font-size: 0.75rem;
+  color: var(--color-muted-text);
+  margin-top: 2px;
+}
+.cycle-mini-strip {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.cycle-mini-cell {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--color-muted);
+  border: 1px solid var(--color-border);
+  transition: background var(--transition);
+}
+.cycle-mini-cell.period      { background: var(--color-period); border-color: var(--color-period); }
+.cycle-mini-cell.symptom-only{ background: #ede9fe; border-color: #8b5cf6; }
+.cycle-mini-cell.predicted   { background: var(--color-period-light); border-color: var(--color-prediction); }
+.cycle-mini-cell.today       { border: 2px solid var(--color-primary); }
+
+/* ── FAB — Log Today ─────────────────────────────────────── */
+.period-fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-period);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(225,29,72,0.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 150;
+  transition: all var(--transition);
+  font-size: 0;
+}
+.period-fab:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 10px 28px rgba(225,29,72,0.50);
+  background: #be123c;
+}
+.period-fab svg { width: 24px; height: 24px; }
+.period-fab-tooltip {
+  position: fixed;
+  bottom: 32px;
+  right: 96px;
+  background: rgba(15,23,42,0.85);
+  color: #fff;
+  font-size: 0.8125rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition);
+  white-space: nowrap;
+  z-index: 149;
+}
+.period-fab:hover + .period-fab-tooltip { opacity: 1; }
+
+/* ── Period page responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+  .cycle-stats-row  { grid-template-columns: 1fr 1fr; }
+  .cycle-overview-row { grid-template-columns: 1fr 1fr; }
+  .flow-selector    { grid-template-columns: repeat(5, 1fr); }
+  .period-fab       { bottom: 20px; right: 20px; }
+  .period-fab-tooltip { display: none; }
+  .quiz-goal-grid   { grid-template-columns: 1fr; }
+  .quiz-metrics-grid{ grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .cycle-stats-row  { grid-template-columns: 1fr; }
+  .flow-selector    { grid-template-columns: repeat(3, 1fr); }
+  .calendar-grid .cal-day { font-size: 0.75rem; }
+  .cycle-overview-row { grid-template-columns: 1fr; }
+}
+
+/* =============================================
+   PERSONALIZATION QUIZ & ONBOARDING STYLES
+   ============================================= */
+
+/* ── Onboarding / Personalize Callout Banner ────────────── */
+.period-onboarding-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #fff1f2 0%, #fdf2f8 50%, #eff6ff 100%);
+  border: 1.5px solid #fecdd3;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(225,29,72,0.08);
+}
+.period-onboarding-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.period-onboarding-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--color-period);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(225,29,72,0.25);
+}
+.period-onboarding-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-foreground);
+  margin-bottom: 2px;
+}
+.period-onboarding-desc {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── Mode & Goal Active Pill in Header ───────────────────── */
+.period-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.period-goal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffe4e6;
+  border: 1px solid #fda4af;
+  color: var(--color-period);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+.period-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.period-profile-btn:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* ── Tailored Health Insights Card ──────────────────────── */
+.period-insights-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fffbfb 100%);
+  border: 1px solid #fecdd3;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  position: relative;
+  overflow: hidden;
+}
+.period-insights-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-period);
+}
+.period-insights-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.period-insights-phase-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-period);
+  background: var(--color-period-light);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.period-insights-text {
+  font-size: 0.875rem;
+  color: var(--color-foreground);
+  line-height: 1.5;
+  font-weight: 500;
+}
+.period-insights-subtext {
+  font-size: 0.8rem;
+  color: var(--color-muted-text);
+  margin-top: 4px;
+}
+
+/* ── Quiz Modal Wizard ───────────────────────────────────── */
+.quiz-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: 28px 28px 24px;
+  position: relative;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+}
+
+.quiz-progress-container {
+  margin-bottom: 24px;
+}
+.quiz-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.8125rem;
+  color: var(--color-muted-text);
+  font-weight: 600;
+}
+.quiz-progress-bar {
+  height: 6px;
+  background: var(--color-muted);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-period) 0%, #f43f5e 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.35s ease;
+}
+
+.quiz-step {
+  display: none;
+  animation: fadeIn 0.25s ease-in-out;
+}
+.quiz-step.active {
+  display: block;
+}
+
+.quiz-step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-foreground);
+  margin-bottom: 6px;
+}
+.quiz-step-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-muted-text);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* ── Goal Cards Grid (Step 1) ────────────────────────────── */
+.quiz-goal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.quiz-goal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  position: relative;
+}
+.quiz-goal-card:hover {
+  border-color: var(--color-period);
+  background: var(--color-period-light);
+  transform: translateY(-2px);
+}
+.quiz-goal-card.selected {
+  border-color: var(--color-period);
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  box-shadow: 0 4px 14px rgba(225,29,72,0.15);
+}
+.quiz-goal-card .goal-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.quiz-goal-card .goal-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-foreground);
+}
+.quiz-goal-card .goal-desc {
+  font-size: 0.775rem;
+  color: var(--color-muted-text);
+  line-height: 1.35;
+}
+.quiz-goal-card .goal-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: 0.75rem;
+}
+.quiz-goal-card.selected .goal-check {
+  background: var(--color-period);
+  border-color: var(--color-period);
+  color: #fff;
+}
+
+/* ── Stepper / Range Pickers (Step 2) ────────────────────── */
+.quiz-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.quiz-metric-box {
+  background: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+}
+.quiz-metric-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-muted-text);
+  margin-bottom: 8px;
+}
+.quiz-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.quiz-step-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.quiz-step-btn:hover {
+  background: var(--color-period);
+  color: #fff;
+  border-color: var(--color-period);
+}
+.quiz-metric-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-period);
+  font-family: var(--font-primary);
+  min-width: 48px;
+}
+
+/* Regularity pills */
+.regularity-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.regularity-pill {
+  padding: 10px 8px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.regularity-pill:hover {
+  border-color: var(--color-period);
+  color: var(--color-period);
+}
+.regularity-pill.selected {
+  background: var(--color-period);
+  border-color: var(--color-period);
+  color: #fff;
+}
+
+/* ── Date input card (Step 3) ────────────────────────────── */
+.quiz-date-card {
+  background: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.quiz-date-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+.quiz-date-row input[type="date"] {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+/* ── Birth control select ────────────────────────────────── */
+.quiz-bc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.quiz-bc-pill {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.quiz-bc-pill:hover {
+  border-color: var(--color-primary);
+}
+.quiz-bc-pill.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Quiz Footer Actions ─────────────────────────────────── */
+.quiz-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+

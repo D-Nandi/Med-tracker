@@ -7,13 +7,14 @@ import toast from "./toast.js";
 
 const NAV_ITEMS = {
   patient: [
-    { id: 'dashboard', label: 'Dashboard', icon: 'home', href: '/pages/patient/dashboard.html' },
-    { id: 'prescriptions', label: 'Prescriptions', icon: 'file-text', href: '/pages/patient/prescriptions.html' },
-    { id: 'medicines', label: 'Medicines', icon: 'pill', href: '/pages/patient/medicines.html' },
-    { id: 'reports', label: 'Reports', icon: 'folder', href: '/pages/patient/reports.html' },
-    { id: 'appointments', label: 'Appointments', icon: 'calendar', href: '/pages/patient/appointments.html' },
-    { id: 'timeline', label: 'Health Timeline', icon: 'clock', href: '/pages/patient/timeline.html' },
-    { id: 'settings', label: 'Settings', icon: 'settings', href: '/pages/patient/settings.html' },
+    { id: 'dashboard',      label: 'Dashboard',       icon: 'home',          href: '/pages/patient/dashboard.html' },
+    { id: 'prescriptions',  label: 'Prescriptions',   icon: 'file-text',     href: '/pages/patient/prescriptions.html' },
+    { id: 'medicines',      label: 'Medicines',       icon: 'pill',          href: '/pages/patient/medicines.html' },
+    { id: 'reports',        label: 'Reports',         icon: 'folder',        href: '/pages/patient/reports.html' },
+    { id: 'appointments',   label: 'Appointments',    icon: 'calendar',      href: '/pages/patient/appointments.html' },
+    { id: 'period-tracker', label: 'Period Tracker',  icon: 'cycle',         href: '/pages/patient/period-tracker.html' },
+    { id: 'timeline',       label: 'Health Timeline', icon: 'clock',         href: '/pages/patient/timeline.html' },
+    { id: 'settings',       label: 'Settings',        icon: 'settings',      href: '/pages/patient/settings.html' },
   ],
   doctor: [
     { id: 'dashboard', label: 'Dashboard', icon: 'home', href: '/pages/doctor/dashboard.html' },
@@ -46,6 +47,7 @@ const SVG_ICONS = {
   menu: `<line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>`,
   cross: `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
   heart: `<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>`,
+  cycle: `<path d="M12 2a10 10 0 1 0 10 10" stroke-linecap="round"/><polyline points="22 2 22 8 16 8"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>`,
 };
 
 function svgIcon(name, size = 20) {

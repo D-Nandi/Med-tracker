@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Period Tracker - MediTrack</title>
+  <meta name="description" content="Track your menstrual cycle, log symptoms, and get period predictions — privately and securely within MediTrack."/>
+  <link rel="stylesheet" href="../../css/main.css"/>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div id="toast-container"></div>
+
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar" aria-label="Sidebar navigation"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+
+    <main id="main" class="page-content">
+
+      <!-- Page header with Personalization Meta -->
+      <div class="page-header" style="margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2>Period & Cycle Tracker</h2>
+            <p>Log your cycle, track symptoms, and see predictions — only visible to you.</p>
+            <div class="period-header-meta" id="period-header-meta">
+              <span class="period-goal-badge" id="header-goal-badge">🌸 Mode: Cycle Tracking</span>
+              <button class="period-profile-btn" id="open-quiz-btn" aria-label="Open Personalization Quiz">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Personalization Quiz & Baseline
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onboarding Callout Banner (shown if profile is not fully customized) -->
+      <div class="period-onboarding-banner" id="onboarding-banner" style="display:none;">
+        <div class="period-onboarding-content">
+          <div class="period-onboarding-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="period-onboarding-title">Personalize Your Cycle Baseline</div>
+            <div class="period-onboarding-desc">Take a 1-minute quiz to set your last period (LMP), typical cycle length, and unlock immediate predictions.</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="banner-start-quiz-btn" style="background:var(--color-period);border-color:var(--color-period);white-space:nowrap;">
+          Start Quiz
+        </button>
+      </div>
+
+      <!-- Privacy notice -->
+      <div class="period-privacy-notice" role="note" aria-label="Privacy notice">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Your period data is private and visible only to you — it is never shared with doctors or admins.
+      </div>
+
+      <!-- Cycle stats / KPI row -->
+      <div class="cycle-stats-row" id="cycle-stats-row">
+        <div class="cycle-stat-card" id="card-cycle-day">
+          <div class="cycle-stat-value" id="stat-cycle-day">—</div>
+          <div class="cycle-stat-label" id="stat-cycle-day-label">Day of Cycle</div>
+        </div>
+        <div class="cycle-stat-card" id="card-next-period">
+          <div class="cycle-stat-value upcoming" id="stat-next-period">—</div>
+          <div class="cycle-stat-label" id="stat-next-period-label">Next Period (est.)</div>
+        </div>
+        <div class="cycle-stat-card" id="card-avg-cycle">
+          <div class="cycle-stat-value neutral" id="stat-avg-cycle">28d</div>
+          <div class="cycle-stat-label" id="stat-avg-cycle-label">Avg. Cycle Length</div>
+        </div>
+      </div>
+
+      <!-- Tailored Health Insights Card -->
+      <div class="period-insights-card" id="period-insights-card">
+        <div class="period-insights-header">
+          <span class="period-insights-phase-tag" id="insights-phase-tag">Cycle Phase: Ready to Start</span>
+          <span style="font-size:0.75rem; color:var(--color-muted-text);" id="insights-goal-sub">🎯 Goal: Cycle Tracking</span>
+        </div>
+        <div class="period-insights-text" id="insights-text">
+          Tell us when your last period started or take the Personalization Quiz to calculate your current cycle day, phase, and predictions.
+        </div>
+        <div class="period-insights-subtext" id="insights-tip">
+          💡 Daily Tip: Click "Personalization Quiz & Baseline" above to get personalized recommendations.
+        </div>
+      </div>
+
+      <!-- Prediction disclaimer -->
+      <div class="period-disclaimer" id="period-disclaimer" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="disclaimer-text">Predictions are based on your personalized onboarding quiz. They will sharpen further as you log future cycles.</span>
+      </div>
+
+      <!-- Calendar card -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="calendar-nav">
+          <button class="calendar-nav-btn" id="prev-month" aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="calendar-month-label" id="calendar-month-label">August 2026</span>
+          <button class="calendar-nav-btn" id="next-month" aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <!-- Weekday headers -->
+        <div class="calendar-weekdays" aria-hidden="true">
+          <div class="calendar-weekday">Sun</div>
+          <div class="calendar-weekday">Mon</div>
+          <div class="calendar-weekday">Tue</div>
+          <div class="calendar-weekday">Wed</div>
+          <div class="calendar-weekday">Thu</div>
+          <div class="calendar-weekday">Fri</div>
+          <div class="calendar-weekday">Sat</div>
+        </div>
+
+        <!-- Calendar grid (rendered by JS) -->
+        <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Period tracking calendar"></div>
+
+        <!-- Phase legend -->
+        <div class="phase-legend" role="legend" aria-label="Calendar colour key">
+          <div class="legend-item"><span class="legend-dot legend-dot--period"></span>Period Logged (Bleeding)</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--symptom"></span>Symptom / Mood Logged</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--predicted"></span>Predicted Period</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--fertile"></span>Fertile Window</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--ovulation"></span>Ovulation</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--pms"></span>PMS / Luteal</div>
+          <div class="legend-item"><span class="legend-dot legend-dot--today"></span>Today</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- FAB: Log today -->
+<button class="period-fab" id="log-today-fab" aria-label="Log today's period">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+</button>
+<div class="period-fab-tooltip" aria-hidden="true">Log Today</div>
+
+<!-- ── Personalization Quiz Modal ────────────────────────────── -->
+<div class="modal-overlay" id="quiz-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="quiz-modal-title">
+  <div class="quiz-modal">
+    <div class="modal-header" style="margin-bottom:12px;">
+      <h2 class="modal-title" id="quiz-modal-title" style="font-size:1.15rem;">✨ Cycle Personalization Quiz</h2>
+      <button class="modal-close" id="close-quiz-modal" aria-label="Close quiz">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="quiz-progress-container">
+      <div class="quiz-progress-meta">
+        <span id="quiz-step-indicator">Step 1 of 4</span>
+        <span id="quiz-step-name">Primary Goal</span>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quiz-progress-fill" style="width: 25%;"></div>
+      </div>
+    </div>
+
+    <!-- Step 1: Goal -->
+    <div class="quiz-step active" id="quiz-step-1">
+      <div class="quiz-step-title">What is your primary goal?</div>
+      <div class="quiz-step-subtitle">We will tailor your prediction algorithms, phases, and health insights accordingly.</div>
+      
+      <div class="quiz-goal-grid">
+        <div class="quiz-goal-card selected" data-goal="track_period">
+          <div class="goal-check">✓</div>
+          <span class="goal-icon">🌸</span>
+          <div class="goal-name">Track My Cycle</div>
+          <div class="goal-desc">Predict period dates, manage symptoms, and understand your body rhythm.</div>
+        </div>
+        <div class="quiz-goal-card" data-goal="conceive">
+          <div class="goal-check">✓</div>
+          <span class="goal-icon">👶</span>
+          <div class="goal-name">Trying to Conceive</div>
+          <div class="goal-desc">Pinpoint your fertile window, ovulation peak, and conception probabilities.</div>
+        </div>
+        <div class="quiz-goal-card" data-goal="birth_control">
+          <div class="goal-check">✓</div>
+          <span class="goal-icon">💊</span>
+          <div class="goal-name">Birth Control Support</div>
+          <div class="goal-desc">Monitor pill/IUD effects, withdrawal bleeds, and schedule medication reminders.</div>
+        </div>
+        <div class="quiz-goal-card" data-goal="perimenopause">
+          <div class="goal-check">✓</div>
+          <span class="goal-icon">🌿</span>
+          <div class="goal-name">Perimenopause & Hormones</div>
+          <div class="goal-desc">Track shifting cycle patterns, hormonal changes, hot flashes, and sleep.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Cycle Baseline & Regularity -->
+    <div class="quiz-step" id="quiz-step-2">
+      <div class="quiz-step-title">Your Typical Cycle Metrics</div>
+      <div class="quiz-step-subtitle">If you're not completely sure, standard averages (28 days cycle, 5 days period) work great to start!</div>
+
+      <div class="quiz-metrics-grid">
+        <div class="quiz-metric-box">
+          <div class="quiz-metric-label">Average Cycle Length</div>
+          <div class="quiz-stepper">
+            <button type="button" class="quiz-step-btn" id="btn-dec-cycle" aria-label="Decrease cycle length">−</button>
+            <div class="quiz-metric-val" id="quiz-cycle-len-val">28d</div>
+            <button type="button" class="quiz-step-btn" id="btn-inc-cycle" aria-label="Increase cycle length">+</button>
+          </div>
+          <div style="font-size:0.7rem;color:var(--color-muted-text);margin-top:6px;">Day 1 to next period Day 1</div>
+        </div>
+
+        <div class="quiz-metric-box">
+          <div class="quiz-metric-label">Period Duration</div>
+          <div class="quiz-stepper">
+            <button type="button" class="quiz-step-btn" id="btn-dec-period" aria-label="Decrease period duration">−</button>
+            <div class="quiz-metric-val" id="quiz-period-dur-val">5d</div>
+            <button type="button" class="quiz-step-btn" id="btn-inc-period" aria-label="Increase period duration">+</button>
+          </div>
+          <div style="font-size:0.7rem;color:var(--color-muted-text);margin-top:6px;">Number of bleeding days</div>
+        </div>
+      </div>
+
+      <div class="form-label">How regular are your cycles usually?</div>
+      <div class="regularity-group">
+        <div class="regularity-pill selected" data-reg="regular">Regular (±2d)</div>
+        <div class="regularity-pill" data-reg="somewhat_regular">Varies slightly</div>
+        <div class="regularity-pill" data-reg="irregular">Irregular / Unsure</div>
+      </div>
+    </div>
+
+    <!-- Step 3: Last Period (LMP) & Cycle Day Positioning -->
+    <div class="quiz-step" id="quiz-step-3">
+      <div class="quiz-step-title">When was your Last Menstrual Period (LMP)?</div>
+      <div class="quiz-step-subtitle">Tell us when your last period started or your current cycle day so we can calibrate your KPIs and predictions immediately.</div>
+
+      <!-- Quick LMP Selectors -->
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+        <button type="button" class="symptom-chip lmp-quick-btn" data-days-ago="0">🩸 Started Today</button>
+        <button type="button" class="symptom-chip lmp-quick-btn" data-days-ago="3">🩸 3 days ago</button>
+        <button type="button" class="symptom-chip lmp-quick-btn" data-days-ago="7">🩸 1 week ago</button>
+        <button type="button" class="symptom-chip lmp-quick-btn" data-days-ago="14">🩸 2 weeks ago</button>
+        <button type="button" class="symptom-chip lmp-quick-btn" data-days-ago="21">🩸 3 weeks ago</button>
+      </div>
+
+      <div class="quiz-date-card">
+        <label class="form-label" for="quiz-last-period-date" style="margin-bottom:4px; font-weight:600;">First day of your last period (LMP):</label>
+        <div class="quiz-date-row">
+          <input type="date" id="quiz-last-period-date" style="width:100%;"/>
+        </div>
+        <div id="quiz-calculated-cycle-day" style="margin-top:10px; font-size:0.875rem; font-weight:700; color:var(--color-period); display:none;">
+          ✨ This means you are on Cycle Day 1 today!
+        </div>
+        <div style="margin-top:14px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.825rem; color:var(--color-text-secondary); cursor:pointer;">
+            <input type="checkbox" id="quiz-autofill-check" checked style="accent-color:var(--color-period); width:16px; height:16px;"/>
+            Auto-log these period days on my calendar now
+          </label>
+        </div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--color-muted-text);">
+        💡 Don't know the exact date? Pick your closest estimate. You can adjust it anytime in settings or by tapping the calendar.
+      </div>
+    </div>
+
+    <!-- Step 4: Health Focus & Conditions -->
+    <div class="quiz-step" id="quiz-step-4">
+      <div class="quiz-step-title">Health Focus & Conditions</div>
+      <div class="quiz-step-subtitle">Select any experiences or conditions you'd like us to keep in mind (optional).</div>
+
+      <div class="form-label">Key Symptoms / Experiences to monitor:</div>
+      <div class="symptom-chips" id="quiz-conditions-chips" style="margin-bottom:16px;">
+        <button type="button" class="symptom-chip" data-cond="cramps">🩸 Menstrual Cramps</button>
+        <button type="button" class="symptom-chip" data-cond="pms">🌊 PMS / Mood Shifts</button>
+        <button type="button" class="symptom-chip" data-cond="heavy_flow">🌊 Heavy Bleeding</button>
+        <button type="button" class="symptom-chip" data-cond="bloating">💨 Bloating & Water Retention</button>
+        <button type="button" class="symptom-chip" data-cond="headache">🤕 Migraines / Headaches</button>
+        <button type="button" class="symptom-chip" data-cond="pcos">🩺 PCOS / PCOD</button>
+        <button type="button" class="symptom-chip" data-cond="endometriosis">🩺 Endometriosis</button>
+      </div>
+
+      <div class="form-label">Contraception / Birth Control:</div>
+      <div class="quiz-bc-grid">
+        <div class="quiz-bc-pill selected" data-bc="none">None / Natural</div>
+        <div class="quiz-bc-pill" data-bc="pill">Oral Pill</div>
+        <div class="quiz-bc-pill" data-bc="iud">IUD (Hormonal / Copper)</div>
+        <div class="quiz-bc-pill" data-bc="implant">Implant / Injection</div>
+      </div>
+    </div>
+
+    <!-- Quiz Modal Footer Actions -->
+    <div class="quiz-footer">
+      <button class="btn btn-ghost" id="quiz-back-btn" style="visibility:hidden;">Back</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" id="quiz-skip-btn">Skip for now</button>
+        <button class="btn btn-primary" id="quiz-next-btn" style="background:var(--color-period);border-color:var(--color-period);">Next Step →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Log Modal ─────────────────────────────────────────────── -->
+<div class="modal-overlay" id="log-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="log-modal-title">Daily Cycle & Symptom Log</h2>
+      <button class="modal-close" id="close-log-modal" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <p id="log-modal-date-label" style="font-size:0.95rem;color:var(--color-muted-text);margin-bottom:20px;font-weight:500;"></p>
+
+    <!-- Flow selector -->
+    <div class="form-label" id="flow-label">Period Bleeding / Flow <span style="color:var(--color-muted-text);font-weight:400;">(select "No Bleeding" for non-period symptom days)</span></div>
+    <div class="flow-selector" role="group" aria-labelledby="flow-label">
+      <button class="flow-btn selected" data-flow="none"     aria-pressed="true"><span class="flow-icon">○</span>No Bleeding</button>
+      <button class="flow-btn" data-flow="spotting" aria-pressed="false"><span class="flow-icon">·</span>Spotting</button>
+      <button class="flow-btn" data-flow="light"    aria-pressed="false"><span class="flow-icon">◔</span>Light</button>
+      <button class="flow-btn" data-flow="medium"   aria-pressed="false"><span class="flow-icon">◑</span>Medium</button>
+      <button class="flow-btn" data-flow="heavy"    aria-pressed="false"><span class="flow-icon">●</span>Heavy</button>
+    </div>
+
+    <!-- Mood selector -->
+    <div class="form-label" id="mood-label">How are you feeling?</div>
+    <div class="mood-selector" role="group" aria-labelledby="mood-label">
+      <button class="mood-btn" data-mood="great"   aria-pressed="false"><span class="mood-icon">😄</span>Great</button>
+      <button class="mood-btn" data-mood="good"    aria-pressed="false"><span class="mood-icon">🙂</span>Good</button>
+      <button class="mood-btn" data-mood="okay"    aria-pressed="false"><span class="mood-icon">😐</span>Okay</button>
+      <button class="mood-btn" data-mood="low"     aria-pressed="false"><span class="mood-icon">😔</span>Low</button>
+      <button class="mood-btn" data-mood="bad"     aria-pressed="false"><span class="mood-icon">😞</span>Bad</button>
+    </div>
+
+    <!-- Symptoms -->
+    <div class="form-label" id="symptoms-label">Symptoms <span style="color:var(--color-muted-text);font-weight:400;">(select all that apply)</span></div>
+    <div class="symptom-chips" role="group" aria-labelledby="symptoms-label">
+      <button class="symptom-chip" data-symptom="cramps"       aria-pressed="false">🩸 Cramps</button>
+      <button class="symptom-chip" data-symptom="headache"     aria-pressed="false">🤕 Headache</button>
+      <button class="symptom-chip" data-symptom="bloating"     aria-pressed="false">💨 Bloating</button>
+      <button class="symptom-chip" data-symptom="fatigue"      aria-pressed="false">😴 Fatigue</button>
+      <button class="symptom-chip" data-symptom="mood_swings"  aria-pressed="false">🌊 Mood Swings</button>
+      <button class="symptom-chip" data-symptom="back_pain"    aria-pressed="false">🔙 Back Pain</button>
+      <button class="symptom-chip" data-symptom="nausea"       aria-pressed="false">🤢 Nausea</button>
+    </div>
+
+    <!-- Pain level -->
+    <div class="form-label" id="pain-label">Pain Level</div>
+    <div class="pain-slider-row">
+      <span style="font-size:0.8rem;color:var(--color-muted-text);">None</span>
+      <input type="range" class="pain-slider" id="pain-slider" min="0" max="5" value="0" step="1" aria-labelledby="pain-label" aria-valuemin="0" aria-valuemax="5"/>
+      <span class="pain-value-label" id="pain-value-label">0</span>
+      <span style="font-size:0.8rem;color:var(--color-muted-text);">Severe</span>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-group">
+      <label class="form-label" for="period-notes">Notes <span style="font-weight:400;color:var(--color-muted-text);">(optional)</span></label>
+      <textarea class="form-control" id="period-notes" rows="2" placeholder="Anything else you'd like to note…" maxlength="400"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="delete-log-btn" style="margin-right:auto;color:var(--color-destructive);display:none;" aria-label="Delete this log entry">Delete Entry</button>
+      <button class="btn btn-ghost" id="cancel-log-btn">Cancel</button>
+      <button class="btn btn-primary" id="save-log-btn" style="background:var(--color-period);border-color:var(--color-period);">Save Log</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth }                     from '../../js/components/auth-guard.js';
+import { renderSidebar, renderTopbar }     from '../../js/components/sidebar.js';
+import { logPeriodDay, getPeriodLogs,
+         deletePeriodLog, getCycleStats,
+         savePeriodProfile, getPeriodProfile } from '../../js/firebase/firestore.js';
+import toast                               from '../../js/components/toast.js';
+
+/* ── State ─────────────────────────────────────────────────── */
+let userData       = null;
+let userProfile    = null;        // Period profile from quiz
+let allLogs        = [];          // Array of log objects from Firestore
+let logMap         = {};          // { 'YYYY-MM-DD': logObj }
+let cycleStats     = {};
+let viewYear       = new Date().getFullYear();
+let viewMonth      = new Date().getMonth();    // 0-indexed
+let activeDate     = null;        // ISO date string being edited
+
+// Quiz wizard state
+let currentQuizStep = 1;
+const quizState = {
+  goal: 'track_period',
+  avgCycleLength: 28,
+  periodDuration: 5,
+  regularity: 'regular',
+  lastPeriodStart: '',
+  conditions: [],
+  birthControl: 'none'
+};
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const todayStr = toISO(today);
+
+/* ── Bootstrap ─────────────────────────────────────────────── */
+async function init() {
+  try {
+    userData = await requireAuth(['patient']);
+    renderSidebar(userData, 'period-tracker');
+    renderTopbar('Period Tracker', userData);
+    
+    // Set default date in quiz step 3 (e.g. 14 days ago)
+    const defaultPast = new Date(today);
+    defaultPast.setDate(defaultPast.getDate() - 14);
+    const datePicker = document.getElementById('quiz-last-period-date');
+    if (datePicker) {
+      datePicker.value = toISO(defaultPast);
+      datePicker.max = todayStr;
+      quizState.lastPeriodStart = toISO(defaultPast);
+    }
+
+    await loadData();
+    setupEventListeners();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/* ── Data loading ──────────────────────────────────────────── */
+async function loadData() {
+  try {
+    const [profile, logs] = await Promise.all([
+      getPeriodProfile(userData.uid),
+      getPeriodLogs(userData.uid)
+    ]);
+
+    userProfile = profile;
+    allLogs     = logs;
+    logMap      = Object.fromEntries(allLogs.map(l => [l.date, l]));
+    
+    // If user has saved profile, populate quizState
+    if (userProfile) {
+      Object.assign(quizState, userProfile);
+      syncQuizInputsFromState();
+    }
+
+    cycleStats = getCycleStats(allLogs, userProfile);
+
+    // If new user and no profile/logs, show onboarding banner & open quiz automatically
+    if (!userProfile && allLogs.length === 0) {
+      document.getElementById('onboarding-banner').style.display = 'flex';
+      setTimeout(() => openQuizModal(), 400);
+    } else if (!userProfile) {
+      document.getElementById('onboarding-banner').style.display = 'flex';
+    } else {
+      document.getElementById('onboarding-banner').style.display = 'none';
+    }
+
+    renderHeaderMeta();
+    renderStats();
+    renderInsights();
+    renderCalendar();
+  } catch (err) {
+    toast.error('Failed to load period data.');
+    console.error(err);
+  }
+}
+
+/* ── Header Meta & Mode ────────────────────────────────────── */
+function renderHeaderMeta() {
+  const badge = document.getElementById('header-goal-badge');
+  const goalNames = {
+    track_period: '🌸 Mode: Cycle Tracking',
+    conceive: '👶 Mode: Trying to Conceive',
+    birth_control: '💊 Mode: Birth Control Support',
+    perimenopause: '🌿 Mode: Perimenopause & Hormones'
+  };
+
+  const currentGoal = userProfile?.goal || quizState.goal || 'track_period';
+  badge.textContent = goalNames[currentGoal] || '🌸 Mode: Cycle Tracking';
+  document.getElementById('insights-goal-sub').textContent = `🎯 ${goalNames[currentGoal] || 'Cycle Tracking'}`;
+}
+
+/* ── Stats & KPIs row ──────────────────────────────────────── */
+function renderStats() {
+  const { avgCycleLength, lastPeriodStart, nextPredictedStart, currentCycleDay, isFromProfile } = cycleStats;
+
+  // Avg cycle length
+  const avgElem = document.getElementById('stat-avg-cycle');
+  avgElem.textContent = `${avgCycleLength}d`;
+  document.getElementById('stat-avg-cycle-label').textContent = isFromProfile ? 'Avg. Cycle (Profile)' : 'Avg. Cycle Length';
+
+  // Current cycle day
+  const cycleDayElem = document.getElementById('stat-cycle-day');
+  if (currentCycleDay !== null && currentCycleDay > 0) {
+    cycleDayElem.textContent = `Day ${currentCycleDay}`;
+  } else if (lastPeriodStart) {
+    cycleDayElem.textContent = `Day 1`;
+  } else {
+    cycleDayElem.innerHTML = `<button type="button" class="btn btn-primary btn-sm" id="btn-quick-set-lmp" style="background:var(--color-period);border-color:var(--color-period);padding:4px 10px;font-size:0.75rem;">+ Set LMP</button>`;
+    document.getElementById('btn-quick-set-lmp')?.addEventListener('click', openQuizModal);
+  }
+
+  // Next period estimation
+  const nextElem = document.getElementById('stat-next-period');
+  const disclaimer = document.getElementById('period-disclaimer');
+  const disclaimerText = document.getElementById('disclaimer-text');
+
+  if (nextPredictedStart) {
+    const daysUntil = Math.ceil((nextPredictedStart - today) / 86400000);
+    if (daysUntil > 0) {
+      nextElem.textContent = `In ${daysUntil}d (${nextPredictedStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})`;
+    } else if (daysUntil === 0) {
+      nextElem.textContent = 'Today (est.)';
+    } else {
+      nextElem.textContent = nextPredictedStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    disclaimer.style.display = 'flex';
+    if (isFromProfile && allLogs.length === 0) {
+      disclaimerText.textContent = 'Predictions are initialized from your personalization quiz baseline. Tap any day to log live symptoms!';
+    } else {
+      disclaimerText.textContent = 'Predictions refine automatically as you log periods across consecutive cycles.';
+    }
+  } else {
+    nextElem.innerHTML = `<span style="font-size:0.95rem; color:var(--color-muted-text);">Set Start Date</span>`;
+    disclaimer.style.display = 'none';
+  }
+}
+
+/* ── Tailored Health Insights ──────────────────────────────── */
+function renderInsights() {
+  const { currentCycleDay, avgCycleLength, goal } = cycleStats;
+  const phaseTag = document.getElementById('insights-phase-tag');
+  const textElem = document.getElementById('insights-text');
+  const tipElem  = document.getElementById('insights-tip');
+
+  if (!currentCycleDay) {
+    phaseTag.textContent = 'Cycle Phase: Ready to Start';
+    textElem.textContent = 'Tell us when your last period (LMP) started to calculate your exact cycle day, fertile window, and next period predictions.';
+    tipElem.textContent = '💡 Tip: Click "Personalization Quiz & Baseline" above to set your LMP in 30 seconds.';
+    return;
+  }
+
+  const day = currentCycleDay;
+  const cycleLen = avgCycleLength || 28;
+  const ovulationDay = cycleLen - 14;
+
+  if (day <= (userProfile?.periodDuration || 5)) {
+    // Menstruation
+    phaseTag.textContent = 'Phase: Menstruation';
+    textElem.textContent = 'Hormone levels are at their baseline. Rest, stay hydrated, and practice gentle stretching.';
+    tipElem.textContent = goal === 'conceive'
+      ? '💡 Tip: Menstrual phase is a time to nourish iron reserves with leafy greens and warm teas.'
+      : '💡 Tip: Magnesium and warm compresses can help ease cramping discomfort.';
+  } else if (day < ovulationDay - 4) {
+    // Follicular
+    phaseTag.textContent = 'Phase: Follicular';
+    textElem.textContent = 'Estrogen is rising! You may notice higher physical energy, enhanced mood, and clearer skin.';
+    tipElem.textContent = '💡 Tip: A prime window for high-intensity workouts and creative projects.';
+  } else if (day >= ovulationDay - 4 && day <= ovulationDay + 1) {
+    // Fertile / Ovulation
+    phaseTag.textContent = day === ovulationDay ? 'Phase: Ovulation Day' : 'Phase: Fertile Window';
+    if (goal === 'conceive') {
+      textElem.textContent = '✨ Peak Fertility Window! Luteinizing hormone (LH) peaks right now, maximizing conception likelihood.';
+      tipElem.textContent = '💡 Conception Tip: The 48 hours leading up to and including ovulation offer highest probability.';
+    } else {
+      textElem.textContent = 'You are in your fertile window. Body temperature and social confidence are typically at their monthly peak.';
+      tipElem.textContent = '💡 Tip: Great phase for presentations, social activities, and endurance training.';
+    }
+  } else {
+    // Luteal / PMS
+    phaseTag.textContent = 'Phase: Luteal / Pre-Menstrual';
+    textElem.textContent = 'Progesterone is peaking before declining. You might experience mild bloating, fatigue, or mood shifts.';
+    tipElem.textContent = '💡 Self-Care Tip: Prioritize complex carbohydrates, reduce caffeine, and get 8+ hours of sleep.';
+  }
+}
+
+function getCycleStartCount() {
+  if (allLogs.length === 0) return 0;
+  const sorted = [...allLogs].sort((a, b) => new Date(a.date) - new Date(b.date));
+  let count = 1, lastDate = new Date(sorted[0].date);
+  for (let i = 1; i < sorted.length; i++) {
+    const d = new Date(sorted[i].date);
+    if ((d - lastDate) / 86400000 > 5) count++;
+    lastDate = d;
+  }
+  return count;
+}
+
+/* ── Calendar rendering ─────────────────────────────────────── */
+function renderCalendar() {
+  const label   = document.getElementById('calendar-month-label');
+  const grid    = document.getElementById('calendar-grid');
+  const months  = ['January','February','March','April','May','June',
+                   'July','August','September','October','November','December'];
+
+  label.textContent = `${months[viewMonth]} ${viewYear}`;
+
+  // Compute phase windows
+  const { nextPredictedStart, avgCycleLength, lastPeriodStart } = cycleStats;
+  const phaseDays = computePhaseDays(lastPeriodStart, nextPredictedStart, avgCycleLength);
+
+  // First day of month and total days
+  const firstDay  = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  let html = '';
+
+  // Leading empty cells
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div class="cal-day cal-day--empty" aria-hidden="true"></div>`;
+  }
+
+  // Day cells
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateObj = new Date(viewYear, viewMonth, d);
+    const isFuture  = dateObj > today;
+    const isToday   = dateStr === todayStr;
+    const logEntry  = logMap[dateStr];
+    const isPeriodLogged  = logEntry && logEntry.flow && logEntry.flow !== 'none';
+    const isSymptomLogged = logEntry && (!logEntry.flow || logEntry.flow === 'none');
+    const phase     = phaseDays[dateStr] || '';
+
+    let classes = 'cal-day';
+    let innerBadges = '';
+
+    if (isPeriodLogged) {
+      classes += ' cal-day--period';
+      innerBadges = '<span class="flow-dot" aria-hidden="true" title="Period flow logged"></span>';
+    } else {
+      if (isFuture && phase === 'predicted') classes += ' cal-day--predicted';
+      else if (phase === 'ovulation')  classes += ' cal-day--ovulation';
+      else if (phase === 'fertile')    classes += ' cal-day--fertile';
+      else if (phase === 'pms')        classes += ' cal-day--pms';
+      
+      if (isSymptomLogged) {
+        classes += ' cal-day--symptom-only';
+        innerBadges = '<span class="symptom-logged-dot" aria-hidden="true" title="Symptoms / Mood logged"></span>';
+        if (logEntry.mood) {
+          const moodIcons = { great: '😄', good: '🙂', okay: '😐', low: '😔', bad: '😞' };
+          if (moodIcons[logEntry.mood]) {
+            innerBadges += `<span class="mood-mini-icon" aria-hidden="true">${moodIcons[logEntry.mood]}</span>`;
+          }
+        }
+      }
+
+      if (isToday && !isPeriodLogged) classes += ' cal-day--today';
+    }
+
+    if (isFuture && !phase && !isPeriodLogged && !isSymptomLogged) classes += ' cal-day--future';
+
+    const ariaLabel = `${dateStr}${isPeriodLogged ? ', period logged' : ''}${isSymptomLogged ? ', symptoms logged' : ''}${isToday ? ', today' : ''}`;
+    html += `<button class="${classes}" data-date="${dateStr}"
+      aria-label="${ariaLabel}"
+      ${(isFuture && !phase && !isPeriodLogged && !isSymptomLogged) ? 'disabled' : ''}
+      >${d}${innerBadges}</button>`;
+  }
+
+  grid.innerHTML = html;
+
+  // Attach click handlers
+  grid.querySelectorAll('.cal-day[data-date]').forEach(btn => {
+    btn.addEventListener('click', () => openLogModal(btn.dataset.date));
+  });
+}
+
+/* ── Phase computation ──────────────────────────────────────── */
+function computePhaseDays(lastPeriodStart, nextPredictedStart, avgCycleLength) {
+  const map = {};
+  if (!nextPredictedStart) return map;
+
+  const duration = userProfile?.periodDuration || 5;
+
+  // Predicted period window: next predicted start + duration
+  for (let i = 0; i < duration; i++) {
+    const d = new Date(nextPredictedStart);
+    d.setDate(d.getDate() + i);
+    map[toISO(d)] = 'predicted';
+  }
+
+  if (!lastPeriodStart) return map;
+
+  // Ovulation: ~14 days before next predicted start
+  const ovulationDay = new Date(nextPredictedStart);
+  ovulationDay.setDate(ovulationDay.getDate() - 14);
+  map[toISO(ovulationDay)] = 'ovulation';
+
+  // Fertile window: ovulation day -5 to +1 (excluding ovulation itself)
+  for (let i = -5; i <= 1; i++) {
+    if (i === 0) continue;
+    const d = new Date(ovulationDay);
+    d.setDate(d.getDate() + i);
+    const s = toISO(d);
+    if (!map[s]) map[s] = 'fertile';
+  }
+
+  // PMS window: 5 days before predicted start (excluding prediction overlap)
+  for (let i = 5; i >= 1; i--) {
+    const d = new Date(nextPredictedStart);
+    d.setDate(d.getDate() - i);
+    const s = toISO(d);
+    if (!map[s]) map[s] = 'pms';
+  }
+
+  return map;
+}
+
+/* ── Personalization Quiz Logic ────────────────────────────── */
+function openQuizModal() {
+  currentQuizStep = 1;
+  showQuizStep(1);
+  syncQuizInputsFromState();
+  document.getElementById('quiz-modal-overlay').style.display = 'flex';
+}
+
+function closeQuizModal() {
+  document.getElementById('quiz-modal-overlay').style.display = 'none';
+}
+
+function showQuizStep(step) {
+  currentQuizStep = step;
+  const totalSteps = 4;
+  const stepNames = ['Primary Goal', 'Cycle Metrics', 'Last Period (LMP)', 'Health Focus'];
+
+  document.querySelectorAll('.quiz-step').forEach((el, idx) => {
+    el.classList.toggle('active', idx + 1 === step);
+  });
+
+  document.getElementById('quiz-step-indicator').textContent = `Step ${step} of ${totalSteps}`;
+  document.getElementById('quiz-step-name').textContent = stepNames[step - 1];
+  document.getElementById('quiz-progress-fill').style.width = `${(step / totalSteps) * 100}%`;
+
+  const backBtn = document.getElementById('quiz-back-btn');
+  backBtn.style.visibility = step > 1 ? 'visible' : 'hidden';
+
+  const nextBtn = document.getElementById('quiz-next-btn');
+  if (step === totalSteps) {
+    nextBtn.textContent = 'Save & Personalize ✓';
+  } else {
+    nextBtn.textContent = 'Next Step →';
+  }
+}
+
+function syncQuizInputsFromState() {
+  // Step 1: Goal
+  document.querySelectorAll('.quiz-goal-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.goal === quizState.goal);
+  });
+
+  // Step 2: Metrics
+  document.getElementById('quiz-cycle-len-val').textContent = `${quizState.avgCycleLength}d`;
+  document.getElementById('quiz-period-dur-val').textContent = `${quizState.periodDuration}d`;
+  document.querySelectorAll('.regularity-pill').forEach(pill => {
+    pill.classList.toggle('selected', pill.dataset.reg === quizState.regularity);
+  });
+
+  // Step 3: Last period date
+  const dateInput = document.getElementById('quiz-last-period-date');
+  if (dateInput) {
+    if (quizState.lastPeriodStart) {
+      dateInput.value = quizState.lastPeriodStart;
+    }
+    updateCalculatedCycleDay(dateInput.value);
+  }
+
+  // Step 4: Conditions & BC
+  document.querySelectorAll('#quiz-conditions-chips .symptom-chip').forEach(chip => {
+    chip.classList.toggle('active', (quizState.conditions || []).includes(chip.dataset.cond));
+  });
+  document.querySelectorAll('.quiz-bc-pill').forEach(pill => {
+    pill.classList.toggle('selected', pill.dataset.bc === quizState.birthControl);
+  });
+}
+
+function updateCalculatedCycleDay(dateStr) {
+  const calcElem = document.getElementById('quiz-calculated-cycle-day');
+  if (!dateStr) {
+    calcElem.style.display = 'none';
+    return;
+  }
+  const d = new Date(dateStr + 'T00:00:00');
+  const diffDays = Math.floor((today - d) / 86400000);
+  if (diffDays >= 0) {
+    calcElem.style.display = 'block';
+    calcElem.textContent = `✨ This means you are on Cycle Day ${diffDays + 1} today!`;
+  } else {
+    calcElem.style.display = 'none';
+  }
+}
+
+async function handleQuizSubmit() {
+  const nextBtn = document.getElementById('quiz-next-btn');
+  nextBtn.disabled = true;
+  nextBtn.textContent = 'Saving Profile…';
+
+  try {
+    // Read the latest value directly from input to prevent any missed change event
+    const dateVal = document.getElementById('quiz-last-period-date')?.value || quizState.lastPeriodStart || '';
+    quizState.lastPeriodStart = dateVal;
+
+    const profilePayload = {
+      goal: quizState.goal,
+      avgCycleLength: Number(quizState.avgCycleLength) || 28,
+      periodDuration: Number(quizState.periodDuration) || 5,
+      regularity: quizState.regularity || 'regular',
+      lastPeriodStart: quizState.lastPeriodStart,
+      conditions: quizState.conditions || [],
+      birthControl: quizState.birthControl || 'none',
+      quizCompleted: true
+    };
+
+    await savePeriodProfile(userData.uid, profilePayload);
+
+    // If user checked "Auto-log on my calendar" and provided a lastPeriodStart date
+    const shouldAutofill = document.getElementById('quiz-autofill-check')?.checked;
+    if (shouldAutofill && quizState.lastPeriodStart) {
+      const startDate = new Date(quizState.lastPeriodStart + 'T00:00:00');
+      const dur = Number(quizState.periodDuration) || 5;
+
+      for (let i = 0; i < dur; i++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + i);
+        if (d <= today) {
+          const dateStr = toISO(d);
+          const flow = i === 0 || i === 1 ? 'medium' : i === 2 ? 'heavy' : 'light';
+          await logPeriodDay(userData.uid, {
+            date: dateStr,
+            flow,
+            mood: 'good',
+            symptoms: ['cramps'],
+            painLevel: 2,
+            notes: 'Auto-logged from onboarding quiz'
+          });
+        }
+      }
+    }
+
+    toast.success('Cycle profile personalized successfully!');
+    closeQuizModal();
+    await loadData();
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to save personalization quiz.');
+  } finally {
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Save & Personalize ✓';
+  }
+}
+
+/* ── Log Modal ─────────────────────────────────────────────── */
+function openLogModal(dateStr) {
+  activeDate = dateStr;
+  const existing = logMap[dateStr];
+
+  // Title / date label
+  const dateObj = new Date(dateStr + 'T00:00:00');
+  document.getElementById('log-modal-title').textContent =
+    dateStr === todayStr ? "Daily Cycle & Symptom Log" : `Daily Log — ${dateObj.toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric' })}`;
+  document.getElementById('log-modal-date-label').textContent =
+    dateStr === todayStr ? 'Today' : dateObj.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  // Reset all controls
+  document.querySelectorAll('.flow-btn').forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+  document.querySelectorAll('.mood-btn').forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+  document.querySelectorAll('.symptom-chip').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+  document.getElementById('pain-slider').value = '0';
+  document.getElementById('pain-value-label').textContent = '0';
+  document.getElementById('period-notes').value = '';
+  document.getElementById('delete-log-btn').style.display = 'none';
+
+  // Pre-populate if existing log
+  if (existing) {
+    const flowVal = existing.flow || 'none';
+    const flowBtn = document.querySelector(`.flow-btn[data-flow="${flowVal}"]`);
+    if (flowBtn) { flowBtn.classList.add('selected'); flowBtn.setAttribute('aria-pressed','true'); }
+    if (existing.mood) {
+      const moodBtn = document.querySelector(`.mood-btn[data-mood="${existing.mood}"]`);
+      if (moodBtn) { moodBtn.classList.add('selected'); moodBtn.setAttribute('aria-pressed','true'); }
+    }
+    (existing.symptoms || []).forEach(sym => {
+      const chip = document.querySelector(`.symptom-chip[data-symptom="${sym}"]`);
+      if (chip) { chip.classList.add('active'); chip.setAttribute('aria-pressed','true'); }
+    });
+    document.getElementById('pain-slider').value = existing.painLevel ?? 0;
+    document.getElementById('pain-value-label').textContent = existing.painLevel ?? 0;
+    document.getElementById('period-notes').value = existing.notes || '';
+    document.getElementById('delete-log-btn').style.display = 'inline-flex';
+  } else {
+    // Default flow to 'none' for a new daily check-in
+    const noneBtn = document.querySelector(`.flow-btn[data-flow="none"]`);
+    if (noneBtn) { noneBtn.classList.add('selected'); noneBtn.setAttribute('aria-pressed','true'); }
+  }
+
+  document.getElementById('log-modal-overlay').style.display = 'flex';
+}
+
+function closeLogModal() {
+  document.getElementById('log-modal-overlay').style.display = 'none';
+  activeDate = null;
+}
+
+async function saveLog() {
+  if (!activeDate) return;
+
+  const saveBtn = document.getElementById('save-log-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+
+  const selectedFlow = document.querySelector('.flow-btn.selected')?.dataset.flow || 'none';
+  const selectedMood = document.querySelector('.mood-btn.selected')?.dataset.mood || '';
+  const symptoms     = [...document.querySelectorAll('.symptom-chip.active')].map(b => b.dataset.symptom);
+  const painLevel    = parseInt(document.getElementById('pain-slider').value, 10);
+  const notes        = document.getElementById('period-notes').value.trim();
+
+  try {
+    await logPeriodDay(userData.uid, {
+      date: activeDate,
+      flow: selectedFlow,
+      mood: selectedMood,
+      symptoms,
+      painLevel,
+      notes
+    });
+    toast.success('Period log saved!');
+    closeLogModal();
+    await loadData();
+  } catch (err) {
+    toast.error('Failed to save log. Please try again.');
+    console.error(err);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Log';
+  }
+}
+
+async function deleteLog() {
+  if (!activeDate || !logMap[activeDate]) return;
+  const logId = logMap[activeDate].id;
+  try {
+    await deletePeriodLog(logId);
+    toast.success('Log entry removed.');
+    closeLogModal();
+    await loadData();
+  } catch (err) {
+    toast.error('Failed to delete log.');
+    console.error(err);
+  }
+}
+
+/* ── Event listeners ────────────────────────────────────────── */
+function setupEventListeners() {
+  // Calendar navigation
+  document.getElementById('prev-month').addEventListener('click', () => {
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+  document.getElementById('next-month').addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+
+  // FAB
+  document.getElementById('log-today-fab').addEventListener('click', () => openLogModal(todayStr));
+
+  // Quiz Triggers
+  document.getElementById('open-quiz-btn').addEventListener('click', openQuizModal);
+  document.getElementById('banner-start-quiz-btn')?.addEventListener('click', openQuizModal);
+  document.getElementById('close-quiz-modal').addEventListener('click', closeQuizModal);
+  document.getElementById('quiz-skip-btn').addEventListener('click', closeQuizModal);
+
+  // Quiz Navigation
+  document.getElementById('quiz-back-btn').addEventListener('click', () => {
+    if (currentQuizStep > 1) showQuizStep(currentQuizStep - 1);
+  });
+
+  document.getElementById('quiz-next-btn').addEventListener('click', () => {
+    if (currentQuizStep < 4) {
+      showQuizStep(currentQuizStep + 1);
+    } else {
+      handleQuizSubmit();
+    }
+  });
+
+  // Quiz Step 1: Goal cards
+  document.querySelectorAll('.quiz-goal-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.quiz-goal-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      quizState.goal = card.dataset.goal;
+    });
+  });
+
+  // Quiz Step 2: Cycle length steppers
+  document.getElementById('btn-dec-cycle').addEventListener('click', () => {
+    if (quizState.avgCycleLength > 21) {
+      quizState.avgCycleLength--;
+      document.getElementById('quiz-cycle-len-val').textContent = `${quizState.avgCycleLength}d`;
+    }
+  });
+  document.getElementById('btn-inc-cycle').addEventListener('click', () => {
+    if (quizState.avgCycleLength < 45) {
+      quizState.avgCycleLength++;
+      document.getElementById('quiz-cycle-len-val').textContent = `${quizState.avgCycleLength}d`;
+    }
+  });
+
+  // Quiz Step 2: Period duration steppers
+  document.getElementById('btn-dec-period').addEventListener('click', () => {
+    if (quizState.periodDuration > 2) {
+      quizState.periodDuration--;
+      document.getElementById('quiz-period-dur-val').textContent = `${quizState.periodDuration}d`;
+    }
+  });
+  document.getElementById('btn-inc-period').addEventListener('click', () => {
+    if (quizState.periodDuration < 10) {
+      quizState.periodDuration++;
+      document.getElementById('quiz-period-dur-val').textContent = `${quizState.periodDuration}d`;
+    }
+  });
+
+  // Quiz Step 2: Regularity
+  document.querySelectorAll('.regularity-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.regularity-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      quizState.regularity = pill.dataset.reg;
+    });
+  });
+
+  // Quiz Step 3: LMP Date input & Quick selectors
+  const dateInput = document.getElementById('quiz-last-period-date');
+  dateInput.addEventListener('input', (e) => {
+    quizState.lastPeriodStart = e.target.value;
+    updateCalculatedCycleDay(e.target.value);
+  });
+  dateInput.addEventListener('change', (e) => {
+    quizState.lastPeriodStart = e.target.value;
+    updateCalculatedCycleDay(e.target.value);
+  });
+
+  document.querySelectorAll('.lmp-quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lmp-quick-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const daysAgo = parseInt(btn.dataset.daysAgo, 10);
+      const targetDate = new Date(today);
+      targetDate.setDate(targetDate.getDate() - daysAgo);
+      const isoStr = toISO(targetDate);
+      dateInput.value = isoStr;
+      quizState.lastPeriodStart = isoStr;
+      updateCalculatedCycleDay(isoStr);
+    });
+  });
+
+  // Quiz Step 4: Conditions
+  document.querySelectorAll('#quiz-conditions-chips .symptom-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      const cond = chip.dataset.cond;
+      if (chip.classList.contains('active')) {
+        if (!quizState.conditions.includes(cond)) quizState.conditions.push(cond);
+      } else {
+        quizState.conditions = quizState.conditions.filter(c => c !== cond);
+      }
+    });
+  });
+
+  // Quiz Step 4: Birth Control
+  document.querySelectorAll('.quiz-bc-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.quiz-bc-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      quizState.birthControl = pill.dataset.bc;
+    });
+  });
+
+  // Modal close
+  document.getElementById('close-log-modal').addEventListener('click', closeLogModal);
+  document.getElementById('cancel-log-btn').addEventListener('click', closeLogModal);
+  document.getElementById('log-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeLogModal();
+  });
+  document.getElementById('quiz-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeQuizModal();
+  });
+
+  // Save / Delete
+  document.getElementById('save-log-btn').addEventListener('click', saveLog);
+  document.getElementById('delete-log-btn').addEventListener('click', deleteLog);
+
+  // Flow buttons
+  document.querySelectorAll('.flow-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.flow-btn').forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // Mood buttons
+  document.querySelectorAll('.mood-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mood-btn').forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // Symptom chips (modal)
+  document.querySelectorAll('#log-modal-overlay .symptom-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      chip.setAttribute('aria-pressed', chip.classList.contains('active').toString());
+    });
+  });
+
+  // Pain slider live label
+  document.getElementById('pain-slider').addEventListener('input', e => {
+    document.getElementById('pain-value-label').textContent = e.target.value;
+  });
+
+  // Keyboard ESC to close modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeLogModal();
+      closeQuizModal();
+    }
+  });
+}
+
+/* ── Helpers ────────────────────────────────────────────────── */
+function toISO(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
+init();
+</script>
+</body>
+</html>

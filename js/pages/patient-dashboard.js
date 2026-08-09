@@ -4,7 +4,8 @@
 import { requireAuth } from "../components/auth-guard.js";
 import { renderSidebar, renderTopbar, svgIcon } from "../components/sidebar.js";
 import { db } from "../firebase/init.js";
-import { collection, query, where, orderBy, limit, getDocs, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getPeriodLogs, getCycleStats, getPeriodProfile } from "../firebase/firestore.js";
 import toast from "../components/toast.js";
 
 let userData = null;
@@ -34,6 +35,7 @@ async function loadDashboardData() {
     renderUpcomingAppointments(apptSnap.docs.slice(0, 3));
     renderTodayMedicines(medsSnap.docs.slice(0, 4));
     renderTimeline(presSnap.docs, reportsSnap.docs, apptSnap.docs);
+    loadCycleOverview(uid);
   } catch (err) {
     toast.error('Failed to load dashboard data.', 'Error');
     console.error(err);
@@ -139,6 +141,99 @@ function renderTimeline(presDocs, reportDocs, apptDocs) {
 
 function emptyState(icon, title, desc) {
   return `<div class="empty-state"><div class="empty-state-icon">${svgIcon(icon, 36)}</div><h3>${title}</h3><p>${desc}</p></div>`;
+}
+
+/* ── Cycle Overview card ─────────────────────────────────────── */
+async function loadCycleOverview(uid) {
+  const el = document.getElementById('cycle-overview');
+  if (!el) return;
+
+  try {
+    const [logs, profile] = await Promise.all([
+      getPeriodLogs(uid),
+      getPeriodProfile(uid)
+    ]);
+    const stats  = getCycleStats(logs, profile);
+    const logMap = Object.fromEntries(logs.map(l => [l.date, l]));
+
+    const { avgCycleLength, nextPredictedStart, currentCycleDay, isFromProfile } = stats;
+    const today   = new Date(); today.setHours(0,0,0,0);
+    const year    = today.getFullYear();
+    const month   = today.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStr = `${year}-${String(month+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+    if (logs.length === 0 && !profile?.lastPeriodStart) {
+      el.innerHTML = `<div class="empty-state">
+        <div class="empty-state-icon">${svgIcon('cycle', 32)}</div>
+        <h3>No cycle data yet</h3>
+        <p>Take the quick personalization quiz to customize predictions & insights.</p>
+        <a href="period-tracker.html" class="btn btn-primary btn-sm" style="background:var(--color-period);border-color:var(--color-period);margin-top:4px;">Open Period Tracker</a>
+      </div>`;
+      return;
+    }
+
+    // Stats row
+    const cycleDayText   = currentCycleDay && currentCycleDay > 0 ? `Day ${currentCycleDay}` : '—';
+    let   nextPeriodText = '—';
+    if (nextPredictedStart) {
+      const daysUntil = Math.ceil((nextPredictedStart - today) / 86400000);
+      nextPeriodText = daysUntil > 0
+        ? `In ${daysUntil}d`
+        : daysUntil === 0 ? 'Today' : nextPredictedStart.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    }
+
+    // Build predicted set for mini-strip
+    const predictedDates = new Set();
+    if (nextPredictedStart) {
+      for (let i = 0; i < 5; i++) {
+        const d = new Date(nextPredictedStart); d.setDate(d.getDate() + i);
+        const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        predictedDates.add(s);
+      }
+    }
+
+    // Mini strip (current month only)
+    let stripHtml = '';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let cls = 'cycle-mini-cell';
+      const logEntry = logMap[ds];
+      if (logEntry && logEntry.flow && logEntry.flow !== 'none') {
+        cls += ' period';
+      } else if (logEntry && (!logEntry.flow || logEntry.flow === 'none')) {
+        cls += ' symptom-only';
+      } else if (predictedDates.has(ds)) {
+        cls += ' predicted';
+      }
+      if (ds === todayStr) cls += ' today';
+      stripHtml += `<div class="${cls}" title="${ds}" aria-hidden="true"></div>`;
+    }
+
+    el.innerHTML = `
+      <div class="cycle-overview-row">
+        <div class="cycle-mini-stat">
+          <div class="cycle-mini-value">${cycleDayText}</div>
+          <div class="cycle-mini-label">Day of Cycle</div>
+        </div>
+        <div class="cycle-mini-stat">
+          <div class="cycle-mini-value" style="color:var(--color-fertile)">${nextPeriodText}</div>
+          <div class="cycle-mini-label">Next Period</div>
+        </div>
+        <div class="cycle-mini-stat">
+          <div class="cycle-mini-value" style="color:var(--color-foreground)">${avgCycleLength}d</div>
+          <div class="cycle-mini-label">Avg. Cycle</div>
+        </div>
+      </div>
+      <div class="cycle-mini-strip" aria-label="This month's cycle strip">${stripHtml}</div>
+      <div style="margin-top:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:0.75rem;color:var(--color-muted-text);"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--color-period);"></span>Logged</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:0.75rem;color:var(--color-muted-text);"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--color-period-light);border:1.5px solid var(--color-prediction);"></span>Predicted</span>
+      </div>`;
+  } catch (err) {
+    console.error('Cycle overview error:', err);
+    el.innerHTML = emptyState('cycle', 'Could not load cycle data', '');
+  }
 }
 
 init();

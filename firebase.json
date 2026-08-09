@@ -1,16 +1,15 @@
 {
   "hosting": {
-    "public": "public",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      "**/node_modules/**",
+      "*.rules",
+      "*.indexes.json",
+      "seed-accounts.mjs",
+      "HANDOFF.md",
+      "*.md"
     ],
     "headers": [
       {

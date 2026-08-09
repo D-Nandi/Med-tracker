@@ -11,6 +11,7 @@ import { requireAuth } from '../components/auth-guard.js';
 import { renderSidebar, renderTopbar, svgIcon } from '../components/sidebar.js';
 import { db } from '../firebase/init.js';
 import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getPeriodLogs } from '../firebase/firestore.js';
 import { formatDate } from '../utils/ui.js';
 import toast from '../components/toast.js';
 
@@ -59,11 +60,12 @@ async function loadTimeline(uid) {
 
   try {
     /* ---- Parallel Firestore queries ---- */
-    const [prescSnap, reportSnap, apptSnap, medSnap] = await Promise.all([
+    const [prescSnap, reportSnap, apptSnap, medSnap, periodLogs] = await Promise.all([
       getDocs(query(collection(db, 'prescriptions'), where('patientId', '==', uid))),
       getDocs(query(collection(db, 'reports'),       where('patientId', '==', uid))),
       getDocs(query(collection(db, 'appointments'),  where('patientId', '==', uid))),
-      getDocs(query(collection(db, 'medicines'),     where('patientId', '==', uid)))
+      getDocs(query(collection(db, 'medicines'),     where('patientId', '==', uid))),
+      getPeriodLogs(uid)
     ]);
 
     const events = [];
@@ -118,6 +120,60 @@ async function loadTimeline(uid) {
         desc:     `${data.dosage || ''} • ${data.frequency || ''}`,
         dotClass: '',
         date:     data.createdAt
+      });
+    });
+
+    /* ---- Period logs & Symptom check-ins ---- */
+    const bleedingLogs    = periodLogs.filter(l => l.flow && l.flow !== 'none');
+    const symptomOnlyLogs = periodLogs.filter(l => !l.flow || l.flow === 'none');
+
+    // Group consecutive period bleeding days into ranges
+    if (bleedingLogs.length > 0) {
+      const sorted = [...bleedingLogs].sort((a, b) => new Date(a.date) - new Date(b.date));
+      let rangeStart = sorted[0].date;
+      let rangeEnd   = sorted[0].date;
+
+      const flushRange = (start, end) => {
+        events.push({
+          type:     'period',
+          icon:     'cycle',
+          title:    start === end ? `Period Log: ${start}` : `Period: ${start} → ${end}`,
+          desc:     'Menstrual cycle bleeding',
+          dotClass: 'timeline-dot--rose',
+          date:     start
+        });
+      };
+
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i - 1].date);
+        const curr = new Date(sorted[i].date);
+        if ((curr - prev) / 86400000 <= 1) {
+          rangeEnd = sorted[i].date;
+        } else {
+          flushRange(rangeStart, rangeEnd);
+          rangeStart = sorted[i].date;
+          rangeEnd   = sorted[i].date;
+        }
+      }
+      flushRange(rangeStart, rangeEnd);
+    }
+
+    // Add non-bleeding symptom check-in events
+    symptomOnlyLogs.forEach(s => {
+      const symptomList = (s.symptoms || []).map(sym => sym.replace('_', ' ')).join(', ');
+      const descParts = [
+        s.mood ? `Mood: ${s.mood}` : '',
+        symptomList ? `Symptoms: ${symptomList}` : '',
+        s.painLevel ? `Pain: ${s.painLevel}/5` : ''
+      ].filter(Boolean);
+
+      events.push({
+        type:     'symptom_log',
+        icon:     'heart',
+        title:    `Daily Health Check-in: ${s.date}`,
+        desc:     descParts.join(' • ') || 'Recorded daily mood and symptoms',
+        dotClass: 'timeline-dot--primary',
+        date:     s.date
       });
     });
 
