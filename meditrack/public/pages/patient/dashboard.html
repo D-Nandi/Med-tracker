@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - MediTrack</title>
+  <link rel="stylesheet" href="../../css/main.css"/>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar" aria-label="Sidebar navigation"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main id="main" class="page-content">
+      <div class="page-header">
+        <h2 id="welcome-msg">Good morning!</h2>
+        <p>Here's your health overview for today.</p>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <!-- Skeletons rendered by JS -->
+      </div>
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Prescriptions</span>
+            <a href="prescriptions.html" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+          <div id="recent-prescriptions"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Upcoming Follow-Ups</span>
+            <a href="appointments.html" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+          <div id="upcoming-appointments"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Today's Medicines</span>
+            <a href="medicines.html" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+          <div id="today-medicines"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Health Timeline</span>
+            <a href="timeline.html" class="btn btn-ghost btn-sm">Full Timeline</a>
+          </div>
+          <div id="health-timeline"><div class="spinner" style="margin:30px auto;"></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script type="module">
+import { requireAuth } from "../../js/components/auth-guard.js";
+import { renderSidebar, renderTopbar, svgIcon } from "../../js/components/sidebar.js";
+import { db } from "../../js/firebase/init.js";
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import toast from "../../js/components/toast.js";
+
+async function init() {
+  try {
+    const userData = await requireAuth(['patient']);
+    renderSidebar(userData, 'dashboard');
+    renderTopbar('Dashboard', userData);
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('welcome-msg').textContent = `${greet}, ${userData.name?.split(' ')[0] || 'there'}!`;
+    loadData(userData.uid);
+  } catch(e) {}
+}
+
+async function loadData(uid) {
+  try {
+    const [presSnap, medsSnap, reportsSnap, apptSnap] = await Promise.all([
+      getDocs(query(collection(db,'prescriptions'),where('patientId','==',uid))),
+      getDocs(query(collection(db,'medicines'),where('patientId','==',uid))),
+      getDocs(query(collection(db,'reports'),where('patientId','==',uid))),
+      getDocs(query(collection(db,'appointments'),where('patientId','==',uid),where('status','==','upcoming')))
+    ]);
+    document.getElementById('stats-grid').innerHTML = [
+      {icon:'file-text',val:presSnap.size,label:'Prescriptions',cls:'blue'},
+      {icon:'pill',val:medsSnap.size,label:'Active Medicines',cls:'green'},
+      {icon:'folder',val:reportsSnap.size,label:'Medical Reports',cls:'amber'},
+      {icon:'calendar',val:apptSnap.size,label:'Upcoming Follow-Ups',cls:'red'}
+    ].map(s=>`<div class="stat-card"><div class="stat-icon stat-icon--${s.cls}">${svgIcon(s.icon)}</div><div><div class="stat-value">${s.val}</div><div class="stat-label">${s.label}</div></div></div>`).join('');
+
+    // Recent prescriptions
+    const presEl = document.getElementById('recent-prescriptions');
+    const presDocs = presSnap.docs.slice(0,3);
+    presEl.innerHTML = presDocs.length ? presDocs.map(d=>{
+      const dt=d.data(),date=dt.date?.toDate?.()?.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})||'N/A',meds=dt.medicines||[];
+      return `<div class="prescription-card" onclick="location.href='prescriptions.html'"><div class="prescription-header"><span class="prescription-date">${date}</span><span class="badge badge-primary">Rx</span></div><div class="prescription-diagnosis">${dt.diagnosis||'Prescription'}</div><div class="prescription-meds">${meds.slice(0,3).map(m=>`<span class="med-chip">${m.name||m}</span>`).join('')}</div></div>`;
+    }).join('') : `<div class="empty-state"><div class="empty-state-icon">${svgIcon('file-text',32)}</div><h3>No prescriptions yet</h3><p>Your doctor will add prescriptions here.</p></div>`;
+
+    // Upcoming appointments
+    const apptEl = document.getElementById('upcoming-appointments');
+    const apptDocs = apptSnap.docs.slice(0,3);
+    apptEl.innerHTML = apptDocs.length ? apptDocs.map(d=>{
+      const dt=d.data(),date=dt.followUpDate?.toDate?.()||new Date(),day=date.getDate(),month=date.toLocaleDateString('en-IN',{month:'short'}),daysLeft=Math.ceil((date-new Date())/86400000);
+      return `<div class="appointment-item"><div class="appt-date-box"><div class="appt-day">${day}</div><div class="appt-month">${month}</div></div><div class="appt-info"><div class="appt-title">Follow-Up Visit</div><div class="appt-doctor">${dt.doctorName||'Doctor'}</div></div><span class="badge ${daysLeft<=2?'badge-danger':daysLeft<=7?'badge-warning':'badge-primary'}">${daysLeft<=0?'Today':daysLeft+'d'}</span></div>`;
+    }).join('') : `<div class="empty-state"><div class="empty-state-icon">${svgIcon('calendar',32)}</div><h3>No upcoming follow-ups</h3><p>Follow-up appointments will appear here.</p></div>`;
+
+    // Today's medicines
+    const medEl = document.getElementById('today-medicines');
+    const medDocs = medsSnap.docs.slice(0,4);
+    medEl.innerHTML = medDocs.length ? `<div class="medicine-grid">${medDocs.map(d=>{
+      const dt=d.data();
+      return `<div class="medicine-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div class="medicine-name">${dt.medicineName||'Medicine'}</div><div class="medicine-dosage">${dt.dosage||''}</div></div><span class="badge ${dt.status==='taken'?'badge-success':dt.status==='missed'?'badge-danger':'badge-warning'}">${dt.status||'Pending'}</span></div><div class="medicine-time" style="margin-top:10px;">${svgIcon('clock',14)} ${dt.time||'8:00 AM'}</div></div>`;
+    }).join('')}</div>` : `<div class="empty-state"><div class="empty-state-icon">${svgIcon('pill',32)}</div><h3>No medicines scheduled</h3><p>Add your medicines to get reminders.</p></div>`;
+
+    // Timeline
+    const tlEl = document.getElementById('health-timeline');
+    const events = [
+      ...presSnap.docs.map(d=>({date:d.data().date?.toDate?.()||new Date(),title:`Prescription: ${d.data().diagnosis||'General'}`,dot:''})),
+      ...reportsSnap.docs.map(d=>({date:d.data().uploadedAt?.toDate?.()||new Date(),title:`Report: ${d.data().reportType||'Medical Report'}`,dot:'green'})),
+      ...apptSnap.docs.map(d=>({date:d.data().followUpDate?.toDate?.()||new Date(),title:'Follow-Up Appointment',dot:'amber'})),
+    ].sort((a,b)=>b.date-a.date).slice(0,5);
+    tlEl.innerHTML = events.length ? `<div class="timeline">${events.map(ev=>`<div class="timeline-item"><div class="timeline-dot ${ev.dot?'timeline-dot--'+ev.dot:''}"></div><div class="timeline-date">${ev.date.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div><div class="timeline-content"><div class="timeline-title">${ev.title}</div></div></div>`).join('')}</div>` : `<div class="empty-state"><div class="empty-state-icon">${svgIcon('clock',32)}</div><h3>No activity yet</h3><p>Your health history will appear here.</p></div>`;
+  } catch(err) {
+    toast.error('Failed to load data.','Error');
+  }
+}
+init();
+</script>
+</body>
+</html>

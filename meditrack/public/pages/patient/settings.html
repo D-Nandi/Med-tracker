@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Settings - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header"><h2>Settings</h2><p>Manage your profile and account preferences</p></div>
+      <div style="max-width:640px;">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><span class="card-title">Profile Information</span></div>
+          <form id="profile-form" novalidate>
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+              <div id="profile-avatar" style="width:64px;height:64px;border-radius:50%;background:var(--color-primary);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.5rem;flex-shrink:0;"></div>
+              <div><div id="profile-name" style="font-weight:700;font-size:1.125rem;color:var(--color-foreground);"></div><div id="profile-email" style="font-size:0.875rem;color:var(--color-muted-text);"></div></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="name" required/></div>
+              <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="phone" type="tel"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" type="date" id="dob"/></div>
+              <div class="form-group"><label class="form-label">Blood Group</label>
+                <select class="form-control" id="blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Allergies / Conditions</label><textarea class="form-control" id="allergies" rows="2" placeholder="e.g. Penicillin allergy, Hypertension..."></textarea></div>
+            <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Change Password</span></div>
+          <form id="pw-form" novalidate>
+            <div class="form-group"><label class="form-label">New Password</label><input class="form-control" type="password" id="new-pw" placeholder="Minimum 8 characters"/></div>
+            <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-control" type="password" id="confirm-pw" placeholder="Repeat password"/></div>
+            <button type="submit" class="btn btn-secondary" id="change-pw-btn">Update Password</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script type="module" src="../../js/pages/patient-settings.js"></script>
+</body>
+</html>

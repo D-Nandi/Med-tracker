@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Appointments - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header"><h2>Appointments</h2><p>Track your upcoming and past follow-up appointments</p></div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm filter-btn active" data-status="upcoming">Upcoming</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-status="completed">Completed</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-status="all">All</button>
+      </div>
+      <div id="appointments-list"><div class="spinner" style="margin:60px auto;"></div></div>
+    </main>
+  </div>
+</div>
+<script type="module" src="../../js/pages/patient-appointments.js"></script>
+</body>
+</html>

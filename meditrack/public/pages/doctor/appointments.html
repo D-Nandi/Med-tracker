@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Appointments - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <div><h2>Appointments</h2><p>Schedule and manage follow-up appointments</p></div>
+        <button class="btn btn-primary" id="new-appt-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Schedule Follow-Up
+        </button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm filter-btn active" data-status="upcoming">Upcoming</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-status="completed">Completed</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-status="cancelled">Cancelled</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-status="all">All</button>
+      </div>
+      <div id="appointments-list"><div class="spinner" style="margin:60px auto;"></div></div>
+    </main>
+  </div>
+</div>
+<!-- Schedule Follow-Up Modal -->
+<div id="new-appt-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Schedule Follow-Up</h2>
+      <button class="modal-close" id="close-appt-modal" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="appt-form" novalidate>
+      <div class="form-group" style="position:relative;">
+        <label class="form-label">Patient *</label>
+        <input class="form-control" id="appt-patient-search" placeholder="Search patient by name..." autocomplete="off"/>
+        <div id="appt-patient-results" style="display:none;position:absolute;z-index:10;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);max-height:180px;overflow-y:auto;width:100%;box-shadow:var(--shadow-md);"></div>
+        <input type="hidden" id="appt-patient-id"/>
+        <div id="appt-selected-patient" style="display:none;margin-top:8px;padding:8px 12px;background:var(--color-primary-light);border-radius:var(--radius-sm);font-size:0.875rem;"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Follow-Up Date *</label><input class="form-control" type="datetime-local" id="appt-date" required/></div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="appt-notes" rows="3" placeholder="Reason for follow-up, instructions..."></textarea></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancel-appt">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-appt-btn">Schedule Appointment</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="module" src="../../js/pages/doctor-appointments.js"></script>
+</body>
+</html>

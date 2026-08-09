@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - MediTrack</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <style>
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#f0f9ff 0%,#ecfeff 50%,#f0fdf4 100%);padding:24px;}
+    .auth-card{width:100%;max-width:480px;background:white;border-radius:var(--radius-xl);padding:40px;box-shadow:var(--shadow-xl);border:1px solid var(--color-border);}
+    .auth-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:28px;}
+    .auth-logo-icon{width:44px;height:44px;background:var(--color-primary);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:white;}
+    .auth-logo-text{font-family:var(--font-primary);font-weight:700;font-size:1.4rem;color:var(--color-foreground);}
+    .auth-logo-text span{color:var(--color-primary);}
+    .auth-title{text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:6px;}
+    .auth-sub{text-align:center;color:var(--color-muted-text);font-size:0.9375rem;margin-bottom:28px;}
+    .auth-footer{text-align:center;margin-top:20px;font-size:0.9rem;color:var(--color-muted-text);}
+    .auth-footer a{color:var(--color-primary);font-weight:600;}
+    .pw-wrapper{position:relative;}
+    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--color-muted-text);padding:4px;}
+    .strength-bar{height:4px;background:var(--color-muted);border-radius:var(--radius-full);margin-top:6px;overflow:hidden;}
+    .strength-fill{height:100%;border-radius:var(--radius-full);transition:width 0.3s,background 0.3s;}
+    .terms-check{display:flex;align-items:flex-start;gap:10px;font-size:0.875rem;color:var(--color-text-secondary);}
+    .terms-check input{margin-top:2px;accent-color:var(--color-primary);width:16px;height:16px;flex-shrink:0;}
+    .terms-check a{color:var(--color-primary);font-weight:600;}
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="auth-card">
+  <div class="auth-logo">
+    <div class="auth-logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+    <div class="auth-logo-text">Medi<span>Track</span></div>
+  </div>
+  <h1 class="auth-title">Create Your Account</h1>
+  <p class="auth-sub">Start managing your health records today — free forever.</p>
+  <form id="signup-form" novalidate>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="fname">First Name</label><input class="form-control" type="text" id="fname" placeholder="First name" required autocomplete="given-name"/><div class="form-error" id="fname-error"></div></div>
+      <div class="form-group"><label class="form-label" for="lname">Last Name</label><input class="form-control" type="text" id="lname" placeholder="Last name" required autocomplete="family-name"/><div class="form-error" id="lname-error"></div></div>
+    </div>
+    <div class="form-group"><label class="form-label" for="email">Email Address</label><input class="form-control" type="email" id="email" placeholder="you@example.com" required autocomplete="email"/><div class="form-error" id="email-error"></div></div>
+    <div class="form-group"><label class="form-label" for="phone">Phone Number</label><input class="form-control" type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel"/></div>
+    <div class="form-group">
+      <label class="form-label" for="dob">Date of Birth</label>
+      <input class="form-control" type="date" id="dob" required/>
+      <div class="form-error" id="dob-error"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <div class="pw-wrapper">
+        <input class="form-control" type="password" id="password" placeholder="Minimum 8 characters" required autocomplete="new-password"/>
+        <button type="button" class="pw-toggle" aria-label="Toggle password">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:0%;"></div></div>
+      <div class="form-hint" id="strength-text"></div>
+      <div class="form-error" id="pw-error"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="confirm-pw">Confirm Password</label>
+      <input class="form-control" type="password" id="confirm-pw" placeholder="Repeat password" required autocomplete="new-password"/>
+      <div class="form-error" id="cpw-error"></div>
+    </div>
+    <div class="form-group">
+      <label class="terms-check">
+        <input type="checkbox" id="terms" required/>
+        I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+      </label>
+      <div class="form-error" id="terms-error"></div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;" id="signup-btn">
+      <span id="signup-text">Create Account</span>
+      <span id="signup-spinner" class="spinner spinner--sm" style="display:none;border-color:rgba(255,255,255,0.3);border-top-color:white;"></span>
+    </button>
+  </form>
+  <div class="auth-footer">Already have an account? <a href="login.html">Sign in</a></div>
+  <div class="auth-footer" style="margin-top:10px;"><a href="../index.html" style="color:var(--color-muted-text);">← Back to home</a></div>
+</div>
+<script type="module">
+import { auth, db } from "../js/firebase/init.js";
+import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import toast from "../js/components/toast.js";
+
+// Password strength
+const pwInput = document.getElementById('password');
+pwInput.addEventListener('input', () => {
+  const v = pwInput.value;
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const fill = document.getElementById('strength-fill');
+  const text = document.getElementById('strength-text');
+  const colors = ['','#dc2626','#d97706','#0891b2','#059669'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  fill.style.width = (score * 25) + '%';
+  fill.style.background = colors[score] || '';
+  text.textContent = score > 0 ? `Password strength: ${labels[score]}` : '';
+  text.style.color = colors[score] || '';
+});
+
+// Password toggle
+document.querySelector('.pw-toggle')?.addEventListener('click', function() {
+  const isText = pwInput.type === 'text';
+  pwInput.type = isText ? 'password' : 'text';
+});
+
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const dob = document.getElementById('dob').value;
+  const pw = document.getElementById('password').value;
+  const cpw = document.getElementById('confirm-pw').value;
+  const terms = document.getElementById('terms').checked;
+  let valid = true;
+  ['fname-error','lname-error','email-error','dob-error','pw-error','cpw-error','terms-error'].forEach(id => document.getElementById(id).textContent = '');
+  if (!fname) { document.getElementById('fname-error').textContent = 'First name required.'; valid = false; }
+  if (!lname) { document.getElementById('lname-error').textContent = 'Last name required.'; valid = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { document.getElementById('email-error').textContent = 'Valid email required.'; valid = false; }
+  if (!dob) { document.getElementById('dob-error').textContent = 'Date of birth required.'; valid = false; }
+  if (pw.length < 8) { document.getElementById('pw-error').textContent = 'Password must be at least 8 characters.'; valid = false; }
+  if (pw !== cpw) { document.getElementById('cpw-error').textContent = 'Passwords do not match.'; valid = false; }
+  if (!terms) { document.getElementById('terms-error').textContent = 'Please accept the terms to continue.'; valid = false; }
+  if (!valid) return;
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true;
+  document.getElementById('signup-text').style.display = 'none';
+  document.getElementById('signup-spinner').style.display = 'inline-block';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    await updateProfile(cred.user, { displayName: `${fname} ${lname}` });
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      uid: cred.user.uid, name: `${fname} ${lname}`, email, phone, dob, role: 'patient', createdAt: serverTimestamp()
+    });
+    toast.success('Account created! Redirecting to your dashboard...');
+    setTimeout(() => window.location.href = '/pages/patient/dashboard.html', 1200);
+  } catch (err) {
+    btn.disabled = false;
+    document.getElementById('signup-text').style.display = '';
+    document.getElementById('signup-spinner').style.display = 'none';
+    const msg = err.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : err.message;
+    toast.error(msg, 'Signup Failed');
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reports - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header"><h2>Medical Report Vault</h2><p>Securely store and access all your medical reports</p></div>
+      <div class="card" style="margin-bottom:24px;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px;">Upload New Report</h3>
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+          <div class="upload-text">Drag &amp; drop files or click to upload</div>
+          <div class="upload-hint">Supports PDF, JPG, PNG, JPEG — Max 10MB per file</div>
+          <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display:none;" aria-label="Upload files"/>
+        </div>
+        <div id="upload-progress" style="display:none;margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.875rem;margin-bottom:4px;"><span id="upload-filename"></span><span id="upload-pct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px;align-items:center;">
+          <select class="form-control" id="report-type" style="max-width:200px;">
+            <option value="Blood Test">Blood Test</option>
+            <option value="X-Ray">X-Ray</option>
+            <option value="MRI Scan">MRI Scan</option>
+            <option value="CT Scan">CT Scan</option>
+            <option value="ECG">ECG</option>
+            <option value="Ultrasound">Ultrasound</option>
+            <option value="Other">Other</option>
+          </select>
+          <button class="btn btn-primary" id="upload-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            Upload Report
+          </button>
+        </div>
+      </div>
+      <div class="card-header" style="margin-bottom:16px;">
+        <span class="card-title">My Reports</span>
+        <input type="text" class="form-control" id="search-reports" placeholder="Search reports..." style="width:200px;"/>
+      </div>
+      <div class="reports-grid" id="reports-grid"><div class="spinner" style="margin:40px auto;grid-column:1/-1;"></div></div>
+    </main>
+  </div>
+</div>
+<script type="module" src="../../js/pages/patient-reports.js"></script>
+</body>
+</html>

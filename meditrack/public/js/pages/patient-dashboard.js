@@ -1,0 +1,144 @@
+// =============================================
+// MediTrack - Patient Dashboard Logic
+// =============================================
+import { requireAuth } from "../components/auth-guard.js";
+import { renderSidebar, renderTopbar, svgIcon } from "../components/sidebar.js";
+import { db } from "../firebase/init.js";
+import { collection, query, where, orderBy, limit, getDocs, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import toast from "../components/toast.js";
+
+let userData = null;
+
+async function init() {
+  try {
+    userData = await requireAuth(['patient']);
+    renderSidebar(userData, 'dashboard');
+    renderTopbar('Dashboard', userData);
+    await loadDashboardData();
+  } catch {}
+}
+
+async function loadDashboardData() {
+  showSkeletons();
+  try {
+    const uid = userData.uid;
+    const [presSnap, medsSnap, reportsSnap, apptSnap] = await Promise.all([
+      getDocs(query(collection(db, 'prescriptions'), where('patientId', '==', uid))),
+      getDocs(query(collection(db, 'medicines'), where('patientId', '==', uid))),
+      getDocs(query(collection(db, 'reports'), where('patientId', '==', uid))),
+      getDocs(query(collection(db, 'appointments'), where('patientId', '==', uid), where('status', '==', 'upcoming')))
+    ]);
+    const stats = { prescriptions: presSnap.size, medicines: medsSnap.size, reports: reportsSnap.size, appointments: apptSnap.size };
+    renderStats(stats);
+    renderRecentPrescriptions(presSnap.docs.slice(0, 3));
+    renderUpcomingAppointments(apptSnap.docs.slice(0, 3));
+    renderTodayMedicines(medsSnap.docs.slice(0, 4));
+    renderTimeline(presSnap.docs, reportsSnap.docs, apptSnap.docs);
+  } catch (err) {
+    toast.error('Failed to load dashboard data.', 'Error');
+    console.error(err);
+  }
+}
+
+function showSkeletons() {
+  document.getElementById('stats-grid').innerHTML = Array(4).fill(`
+    <div class="stat-card"><div class="skeleton" style="width:52px;height:52px;border-radius:10px;"></div><div><div class="skeleton skeleton-title" style="width:60px;"></div><div class="skeleton skeleton-text" style="width:100px;"></div></div></div>
+  `).join('');
+}
+
+function renderStats({ prescriptions, medicines, reports, appointments }) {
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--blue">${svgIcon('file-text')}</div>
+      <div><div class="stat-value">${prescriptions}</div><div class="stat-label">Prescriptions</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--green">${svgIcon('pill')}</div>
+      <div><div class="stat-value">${medicines}</div><div class="stat-label">Active Medicines</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--amber">${svgIcon('folder')}</div>
+      <div><div class="stat-value">${reports}</div><div class="stat-label">Uploaded Reports</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--red">${svgIcon('calendar')}</div>
+      <div><div class="stat-value">${appointments}</div><div class="stat-label">Upcoming Follow-Ups</div></div>
+    </div>
+  `;
+}
+
+function renderRecentPrescriptions(docs) {
+  const el = document.getElementById('recent-prescriptions');
+  if (!docs.length) { el.innerHTML = emptyState('file-text', 'No prescriptions yet', 'Your doctor will add prescriptions here.'); return; }
+  el.innerHTML = docs.map(d => {
+    const data = d.data();
+    const date = data.date?.toDate ? data.date.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+    const meds = data.medicines || [];
+    return `<div class="prescription-card" onclick="window.location.href='prescriptions.html'">
+      <div class="prescription-header">
+        <span class="prescription-date">${date}</span>
+        <span class="badge badge-primary">Rx</span>
+      </div>
+      <div class="prescription-diagnosis">${data.diagnosis || 'General Prescription'}</div>
+      <div class="prescription-meds">${meds.slice(0,3).map(m => `<span class="med-chip">${m.name || m}</span>`).join('')}${meds.length > 3 ? `<span class="med-chip">+${meds.length-3} more</span>` : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderUpcomingAppointments(docs) {
+  const el = document.getElementById('upcoming-appointments');
+  if (!docs.length) { el.innerHTML = emptyState('calendar', 'No upcoming appointments', 'Your doctor will schedule follow-ups here.'); return; }
+  el.innerHTML = docs.map(d => {
+    const data = d.data();
+    const date = data.followUpDate?.toDate ? data.followUpDate.toDate() : new Date();
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-IN', { month: 'short' });
+    const daysLeft = Math.ceil((date - new Date()) / 86400000);
+    return `<div class="appointment-item">
+      <div class="appt-date-box"><div class="appt-day">${day}</div><div class="appt-month">${month}</div></div>
+      <div class="appt-info">
+        <div class="appt-title">Follow-Up Visit</div>
+        <div class="appt-doctor">${data.doctorName || 'Doctor'}</div>
+        <div class="appt-time">${daysLeft > 0 ? `In ${daysLeft} day${daysLeft !== 1 ? 's' : ''}` : 'Today'}</div>
+      </div>
+      <span class="badge ${daysLeft <= 2 ? 'badge-danger' : daysLeft <= 7 ? 'badge-warning' : 'badge-primary'}">${daysLeft <= 0 ? 'Today' : `${daysLeft}d left`}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderTodayMedicines(docs) {
+  const el = document.getElementById('today-medicines');
+  if (!docs.length) { el.innerHTML = emptyState('pill', 'No medicines scheduled', 'Your medicines will appear here.'); return; }
+  el.innerHTML = docs.map(d => {
+    const data = d.data();
+    return `<div class="medicine-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div><div class="medicine-name">${data.medicineName || 'Medicine'}</div><div class="medicine-dosage">${data.dosage || ''} — ${data.frequency || ''}</div></div>
+        <span class="badge ${data.status === 'taken' ? 'badge-success' : data.status === 'missed' ? 'badge-danger' : 'badge-warning'}">${data.status || 'pending'}</span>
+      </div>
+      <div class="medicine-time">${svgIcon('clock', 14)} ${data.time || '8:00 AM'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline(presDocs, reportDocs, apptDocs) {
+  const el = document.getElementById('health-timeline');
+  const events = [
+    ...presDocs.map(d => ({ type: 'prescription', date: d.data().date?.toDate?.() || new Date(), title: `Prescription: ${d.data().diagnosis || 'General'}`, dot: '' })),
+    ...reportDocs.map(d => ({ type: 'report', date: d.data().uploadedAt?.toDate?.() || new Date(), title: `Report Uploaded: ${d.data().reportType || 'Medical Report'}`, dot: 'green' })),
+    ...apptDocs.map(d => ({ type: 'appointment', date: d.data().followUpDate?.toDate?.() || new Date(), title: `Follow-Up Appointment`, dot: 'amber' })),
+  ].sort((a, b) => b.date - a.date).slice(0, 6);
+  if (!events.length) { el.innerHTML = emptyState('clock', 'No activity yet', 'Your health timeline will appear here.'); return; }
+  el.innerHTML = `<div class="timeline">${events.map(ev => `
+    <div class="timeline-item">
+      <div class="timeline-dot ${ev.dot ? 'timeline-dot--' + ev.dot : ''}"></div>
+      <div class="timeline-date">${ev.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+      <div class="timeline-content"><div class="timeline-title">${ev.title}</div></div>
+    </div>`).join('')}</div>`;
+}
+
+function emptyState(icon, title, desc) {
+  return `<div class="empty-state"><div class="empty-state-icon">${svgIcon(icon, 36)}</div><h3>${title}</h3><p>${desc}</p></div>`;
+}
+
+init();

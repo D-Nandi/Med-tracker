@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="MediTrack - Never miss a medicine or follow-up again. Store prescriptions, reports, and treatment reminders securely in one place."/>
+  <title>MediTrack - Never Miss a Medicine or Follow-Up Again</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/landing.css"/>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div id="toast-container"></div>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav" aria-label="Main navigation">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        Medi<span>Track</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#testimonials">Testimonials</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <a href="pages/login.html" class="btn btn-ghost btn-sm">Login</a>
+        <a href="pages/signup.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#features">Features</a>
+      <a href="#benefits">Benefits</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+      <a href="pages/login.html">Login</a>
+      <a href="pages/signup.html" style="color:var(--color-primary);font-weight:700;">Get Started Free</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 13.01 9 10.01"/></svg>
+          Trusted by 10,000+ patients
+        </div>
+        <h1>Never Miss a Medicine or<br/><span>Follow-Up Again</span></h1>
+        <p class="hero-sub">Store prescriptions, reports, and treatment reminders securely in one place. Your complete health companion — accessible anytime, anywhere.</p>
+        <div class="hero-actions">
+          <a href="pages/signup.html" class="btn btn-primary btn-lg">Get Started Free</a>
+          <a href="pages/login.html?role=doctor" class="btn btn-secondary btn-lg">Doctor Portal</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">10K+</div><div class="hero-stat-label">Active Patients</div></div>
+          <div><div class="hero-stat-num">500+</div><div class="hero-stat-label">Doctors</div></div>
+          <div><div class="hero-stat-num">99.9%</div><div class="hero-stat-label">Uptime</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <div class="hero-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <div class="hero-card-title">Today's Medicines</div>
+              <div class="hero-card-sub">3 of 4 taken</div>
+            </div>
+          </div>
+          <div class="hero-med-item">
+            <div><div class="hero-med-name">Metformin 500mg</div><div class="hero-med-time">8:00 AM</div></div>
+            <span class="badge badge-success">Taken</span>
+          </div>
+          <div class="hero-med-item">
+            <div><div class="hero-med-name">Lisinopril 10mg</div><div class="hero-med-time">12:00 PM</div></div>
+            <span class="badge badge-success">Taken</span>
+          </div>
+          <div class="hero-med-item">
+            <div><div class="hero-med-name">Atorvastatin 20mg</div><div class="hero-med-time">8:00 PM</div></div>
+            <span class="badge badge-warning">Pending</span>
+          </div>
+        </div>
+        <div class="hero-floating hero-floating--1">
+          <div class="floating-dot floating-dot--green"></div>
+          Follow-up in 3 days
+        </div>
+        <div class="hero-floating hero-floating--2">
+          <div class="floating-dot floating-dot--blue"></div>
+          New prescription added
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section section-alt" id="features">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-tag">Features</div>
+      <h2 class="section-title">Everything You Need in One Place</h2>
+      <p class="section-sub">MediTrack brings your entire health journey together — from prescriptions to reports, reminders to follow-ups.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Digital Prescriptions</h3>
+        <p>Doctors create and send prescriptions directly to patients digitally. No more lost paper prescriptions or manual transcription errors.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <h3>Medicine Reminders</h3>
+        <p>Never miss a dose. Set up personalized reminders for every medicine with custom schedules, dosages, and frequency tracking.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Medical Report Vault</h3>
+        <p>Upload and securely store all your medical reports — blood tests, X-rays, MRIs — accessible from any device, any time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3>Follow-Up Tracking</h3>
+        <p>Doctors schedule follow-ups and patients receive timely reminders. Never miss an important appointment again.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Health Timeline</h3>
+        <p>A complete chronological view of your health journey — prescriptions, reports, appointments, and milestones all in one timeline.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon--amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-9.999 5.002 5.002 0 0 0-9.78 2.096A4.001 4.001 0 0 0 3 15z"/></svg>
+        </div>
+        <h3>Cloud Access</h3>
+        <p>Your health data synced securely across all devices. Access your records from your phone, tablet, or computer instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="section" id="benefits">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-tag">Benefits</div>
+      <h2 class="section-title">Built for Everyone in Healthcare</h2>
+      <p class="section-sub">Whether you're a patient, doctor, or clinic admin, MediTrack makes healthcare management effortless.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-role">
+          <div class="benefit-role-icon" style="background:var(--color-primary-light);color:var(--color-primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="benefit-role-name">For Patients</div>
+        </div>
+        <div class="benefit-list">
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Never lose a prescription again</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Get medicine reminders on time</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Store all reports in one place</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Track follow-up appointments</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Share records instantly with doctors</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-role">
+          <div class="benefit-role-icon" style="background:var(--color-accent-light);color:var(--color-accent);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="benefit-role-name">For Doctors</div>
+        </div>
+        <div class="benefit-list">
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Create digital prescriptions instantly</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>View full patient history at a glance</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Schedule and track follow-ups</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Monitor treatment compliance</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reduce administrative overhead</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-role">
+          <div class="benefit-role-icon" style="background:var(--color-warning-light);color:var(--color-warning);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="benefit-role-name">For Clinics</div>
+        </div>
+        <div class="benefit-list">
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Centralized patient management</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Real-time statistics dashboard</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Manage doctor accounts easily</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Paperless record keeping</div>
+          <div class="benefit-item"><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>HIPAA-ready secure storage</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section section-alt" id="testimonials">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-tag">Testimonials</div>
+      <h2 class="section-title">Trusted by Patients & Doctors</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"MediTrack has completely changed how I manage my diabetes. I never miss my medication anymore, and my doctor can see my history instantly during appointments."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:var(--color-primary);">RK</div>
+          <div><div class="testimonial-name">Rajesh Kumar</div><div class="testimonial-title">Diabetes Patient, Delhi</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"As a cardiologist, I can now send prescriptions digitally and track whether my patients are following up. It's reduced no-shows by over 40% at my clinic."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:var(--color-accent);">DS</div>
+          <div><div class="testimonial-name">Dr. Sunita Mehta</div><div class="testimonial-title">Cardiologist, Mumbai</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Managing 5 doctors and 200+ patients used to be a nightmare. With MediTrack, our clinic runs smoothly and patients are far more engaged with their treatment."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:var(--color-warning);">AP</div>
+          <div><div class="testimonial-name">Amit Patel</div><div class="testimonial-title">Clinic Administrator, Ahmedabad</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question">Is my health data secure on MediTrack?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>Absolutely. MediTrack uses Firebase with bank-grade encryption. All data is encrypted at rest and in transit. We follow strict Firestore security rules ensuring only authorized users can access their own data.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Can I access MediTrack on my phone?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>Yes! MediTrack is fully responsive and works beautifully on all devices — smartphones, tablets, and desktops. Just open your browser and log in from anywhere.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How do doctors get access?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>Doctors are registered by clinic administrators. Once your admin adds you to the system, you receive login credentials and can immediately start creating prescriptions and managing patients.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What file types can I upload for reports?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>You can upload PDF, JPG, PNG, and JPEG files. Each file is stored securely in Firebase Storage with a maximum size of 10MB per file.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Will I get notifications for medicine reminders?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>Yes! MediTrack uses Firebase Cloud Messaging to send push notifications. You'll receive reminders for medicines, upcoming appointments, new prescriptions, and follow-up dates — right on your device.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Is MediTrack free to use?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="faq-answer"><p>MediTrack offers a free tier for patients. Clinics and hospitals can contact us for enterprise pricing with unlimited doctors, advanced analytics, and dedicated support.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Contact</div>
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-sub">Have questions? We're here to help. Reach out and our team will respond within 24 hours.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>We'd love to hear from you</h3>
+        <p>Whether you're a patient looking for help, a clinic interested in enterprise plans, or just curious about MediTrack — drop us a message.</p>
+        <div class="contact-items">
+          <div class="contact-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> support@meditrack.health</div>
+          <div class="contact-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.36 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.27 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +91 98765 43210</div>
+          <div class="contact-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Bangalore, India</div>
+        </div>
+      </div>
+      <div class="contact-form-card">
+        <form id="contact-form" novalidate>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" for="c-name">Full Name</label><input class="form-control" type="text" id="c-name" placeholder="Your name" required/></div>
+            <div class="form-group"><label class="form-label" for="c-email">Email</label><input class="form-control" type="email" id="c-email" placeholder="you@example.com" required/></div>
+          </div>
+          <div class="form-group"><label class="form-label" for="c-subject">Subject</label><input class="form-control" type="text" id="c-subject" placeholder="How can we help?" required/></div>
+          <div class="form-group"><label class="form-label" for="c-message">Message</label><textarea class="form-control" id="c-message" rows="4" placeholder="Tell us more..." required></textarea></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Start Your Health Journey Today</h2>
+    <p>Join thousands of patients and doctors already using MediTrack to manage healthcare better.</p>
+    <div class="cta-actions">
+      <a href="pages/signup.html" class="btn btn-lg" style="background:white;color:var(--color-primary);border:2px solid white;">Create Free Account</a>
+      <a href="pages/login.html?role=doctor" class="btn btn-secondary btn-lg">Doctor Portal</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo" style="display:inline-flex;margin-bottom:16px;">
+          <div class="nav-logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          Medi<span>Track</span>
+        </a>
+        <p>Your complete health companion. Store prescriptions, track medicines, manage reports — all in one secure platform.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#benefits">Benefits</a>
+        <a href="pages/signup.html">Get Started</a>
+        <a href="pages/login.html">Login</a>
+      </div>
+      <div class="footer-col">
+        <h4>Portals</h4>
+        <a href="pages/signup.html">Patient Portal</a>
+        <a href="pages/login.html?role=doctor">Doctor Portal</a>
+        <a href="pages/login.html?role=admin">Admin Portal</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2024 MediTrack. All rights reserved.</span>
+      <span>Built with Firebase &amp; ❤️ for better healthcare</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+  });
+  // Mobile menu
+  const hamburger = document.getElementById('nav-hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger?.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', open);
+  });
+  // Close mobile menu on link click
+  mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      document.querySelectorAll('.faq-item.open').forEach(i => { if (i !== item) i.classList.remove('open'); });
+      item.classList.toggle('open');
+    });
+  });
+  // Contact form
+  document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Message Sent!';
+      e.target.reset();
+      setTimeout(() => { btn.textContent = 'Send Message'; btn.disabled = false; }, 3000);
+    }, 1200);
+  });
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+</body>
+</html>

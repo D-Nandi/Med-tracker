@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Medicines - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <div><h2>Medicine Schedule</h2><p>Track and manage your daily medicines</p></div>
+        <button class="btn btn-primary" id="add-med-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Medicine
+        </button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm filter-btn active" data-filter="all">All</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-filter="pending">Pending</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-filter="taken">Taken</button>
+        <button class="btn btn-ghost btn-sm filter-btn" data-filter="missed">Missed</button>
+      </div>
+      <div class="medicine-grid" id="medicines-grid"><div class="spinner" style="margin:60px auto;grid-column:1/-1;"></div></div>
+    </main>
+  </div>
+</div>
+<div id="add-med-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Medicine</h2>
+      <button class="modal-close" id="close-med-modal" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="add-med-form" novalidate>
+      <div class="form-group"><label class="form-label">Medicine Name *</label><input class="form-control" id="med-name" placeholder="e.g. Paracetamol 500mg" required/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Dosage</label><input class="form-control" id="med-dosage" placeholder="e.g. 500mg"/></div>
+        <div class="form-group"><label class="form-label">Frequency *</label>
+          <select class="form-control" id="med-freq">
+            <option value="Once daily">Once daily</option>
+            <option value="Twice daily">Twice daily</option>
+            <option value="Three times daily">Three times daily</option>
+            <option value="Every 6 hours">Every 6 hours</option>
+            <option value="As needed">As needed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Time *</label><input class="form-control" type="time" id="med-time" value="08:00" required/></div>
+        <div class="form-group"><label class="form-label">Duration</label><input class="form-control" id="med-duration" placeholder="e.g. 7 days"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Instructions</label><textarea class="form-control" id="med-instructions" rows="2" placeholder="Take with food..."></textarea></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancel-med">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-med-btn">Save Medicine</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="module" src="../../js/pages/patient-medicines.js"></script>
+</body>
+</html>

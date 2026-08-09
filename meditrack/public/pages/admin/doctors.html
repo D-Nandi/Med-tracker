@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Manage Doctors - MediTrack</title><link rel="stylesheet" href="../../css/main.css"/></head>
+<body>
+<div id="toast-container"></div>
+<div class="app-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-content">
+    <header id="topbar" class="topbar"></header>
+    <main class="page-content">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <div><h2>Manage Doctors</h2><p>Add and manage doctor accounts</p></div>
+        <div style="display:flex;gap:10px;">
+          <input type="text" class="form-control" id="search-doctors" placeholder="Search doctors..." style="width:220px;"/>
+          <button class="btn btn-primary" id="add-doctor-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Doctor
+          </button>
+        </div>
+      </div>
+      <div class="table-wrapper" id="doctors-table"><div class="spinner" style="margin:60px auto;"></div></div>
+    </main>
+  </div>
+</div>
+<!-- Add Doctor Modal -->
+<div id="add-doctor-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Doctor</h2>
+      <button class="modal-close" id="close-doc-modal" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="doc-form" novalidate>
+      <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="doc-name" required/></div>
+      <div class="form-group"><label class="form-label">Email *</label><input class="form-control" id="doc-email" type="email" required/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Specialization</label><input class="form-control" id="doc-spec" placeholder="e.g. Cardiology"/></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="doc-phone" type="tel"/></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancel-doc">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-doctor-btn">Add Doctor</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="module" src="../../js/pages/admin-doctors.js"></script>
+</body>
+</html>
