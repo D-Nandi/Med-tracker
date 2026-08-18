@@ -36,10 +36,13 @@
     <form id="appt-form" novalidate>
       <div class="form-group" style="position:relative;">
         <label class="form-label">Patient *</label>
-        <input class="form-control" id="appt-patient-search" placeholder="Search patient by name..." autocomplete="off"/>
-        <div id="appt-patient-results" style="display:none;position:absolute;z-index:10;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);max-height:180px;overflow-y:auto;width:100%;box-shadow:var(--shadow-md);"></div>
+        <input class="form-control" id="appt-patient-search" placeholder="Click to select or type to search patient..." autocomplete="off"/>
+        <div id="appt-patient-results" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--color-surface);border:1.5px solid var(--color-primary);border-radius:var(--radius-md);max-height:200px;overflow-y:auto;box-shadow:var(--shadow-lg);margin-top:4px;"></div>
         <input type="hidden" id="appt-patient-id"/>
-        <div id="appt-selected-patient" style="display:none;margin-top:8px;padding:8px 12px;background:var(--color-primary-light);border-radius:var(--radius-sm);font-size:0.875rem;"></div>
+        <div id="appt-selected-patient" style="display:none;margin-top:8px;padding:10px 14px;background:var(--color-primary-light);border:1px solid rgba(8,145,178,0.25);border-radius:var(--radius-md);font-size:0.875rem;align-items:center;justify-content:space-between;">
+          <span id="appt-selected-patient-text" style="font-weight:600;color:var(--color-primary-dark);"></span>
+          <button type="button" id="clear-appt-patient-btn" style="background:none;border:none;color:var(--color-muted-text);cursor:pointer;font-size:1.1rem;line-height:1;" title="Remove patient">✕</button>
+        </div>
       </div>
       <div class="form-group"><label class="form-label">Follow-Up Date *</label><input class="form-control" type="datetime-local" id="appt-date" required/></div>
       <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="appt-notes" rows="3" placeholder="Reason for follow-up, instructions..."></textarea></div>

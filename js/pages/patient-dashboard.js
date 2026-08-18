@@ -15,8 +15,18 @@ async function init() {
     userData = await requireAuth(['patient']);
     renderSidebar(userData, 'dashboard');
     renderTopbar('Dashboard', userData);
+
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const welcomeEl = document.getElementById('welcome-msg');
+    if (welcomeEl) {
+      welcomeEl.textContent = `${greet}, ${userData.name?.split(' ')[0] || 'there'}!`;
+    }
+
     await loadDashboardData();
-  } catch {}
+  } catch (err) {
+    console.error('Init error:', err);
+  }
 }
 
 async function loadDashboardData() {
@@ -143,10 +153,15 @@ function emptyState(icon, title, desc) {
   return `<div class="empty-state"><div class="empty-state-icon">${svgIcon(icon, 36)}</div><h3>${title}</h3><p>${desc}</p></div>`;
 }
 
-/* ── Cycle Overview card ─────────────────────────────────────── */
 async function loadCycleOverview(uid) {
   const el = document.getElementById('cycle-overview');
   if (!el) return;
+
+  const card = el.closest('.card') || document.getElementById('cycle-overview-card');
+  if (userData?.gender === 'male') {
+    if (card) card.style.display = 'none';
+    return;
+  }
 
   try {
     const [logs, profile] = await Promise.all([

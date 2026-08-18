@@ -1,0 +1,14 @@
+{
+  "name": "meditrack",
+  "version": "1.0.0",
+  "description": "MediTrack - Patient Health Companion Platform",
+  "private": true,
+  "scripts": {
+    "dev": "npx -y live-server --port=3000 --no-browser",
+    "seed": "node seed-accounts.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "firebase": "^10.7.1"
+  }
+}

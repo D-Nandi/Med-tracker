@@ -28,21 +28,33 @@
       <button class="modal-close" id="close-rx-modal" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <form id="rx-form" novalidate>
-      <div class="form-group">
+      <div class="form-group" style="position:relative;">
         <label class="form-label">Patient *</label>
-        <input class="form-control" id="patient-search" placeholder="Search patient by name..." autocomplete="off"/>
-        <div id="patient-results" style="display:none;position:absolute;z-index:10;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);max-height:180px;overflow-y:auto;width:100%;box-shadow:var(--shadow-md);"></div>
+        <input class="form-control" id="patient-search" placeholder="Click to select or type to search patient..." autocomplete="off"/>
+        <div id="patient-results" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--color-surface);border:1.5px solid var(--color-primary);border-radius:var(--radius-md);max-height:220px;overflow-y:auto;box-shadow:var(--shadow-lg);margin-top:4px;"></div>
         <input type="hidden" id="selected-patient-id"/>
-        <div id="selected-patient" style="display:none;margin-top:8px;padding:8px 12px;background:var(--color-primary-light);border-radius:var(--radius-sm);font-size:0.875rem;"></div>
+        <div id="selected-patient" style="display:none;margin-top:8px;padding:10px 14px;background:var(--color-primary-light);border:1px solid rgba(8,145,178,0.25);border-radius:var(--radius-md);font-size:0.875rem;display:none;align-items:center;justify-content:space-between;">
+          <span id="selected-patient-text" style="font-weight:600;color:var(--color-primary-dark);"></span>
+          <button type="button" id="clear-patient-btn" style="background:none;border:none;color:var(--color-muted-text);cursor:pointer;font-size:1.1rem;line-height:1;" title="Remove patient">✕</button>
+        </div>
       </div>
       <div class="form-group"><label class="form-label">Diagnosis *</label><textarea class="form-control" id="rx-diagnosis" rows="2" placeholder="e.g. Upper Respiratory Tract Infection" required></textarea></div>
       <div class="form-group">
-        <label class="form-label">Medicines</label>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label class="form-label" style="margin-bottom:0;">Medicines *</label>
+          <button type="button" class="btn btn-ghost btn-sm" id="add-medicine-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Medicine
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:2.5fr 1.5fr 2fr 1.5fr 40px;gap:8px;padding:0 4px;margin-bottom:6px;font-size:0.75rem;font-weight:700;color:var(--color-muted-text);text-transform:uppercase;letter-spacing:0.05em;">
+          <div>Medicine Name</div>
+          <div>Dosage</div>
+          <div>Frequency</div>
+          <div>Duration</div>
+          <div></div>
+        </div>
         <div id="medicines-rows"></div>
-        <button type="button" class="btn btn-ghost btn-sm" id="add-medicine-row" style="margin-top:8px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Medicine
-        </button>
       </div>
       <div class="form-group"><label class="form-label">Instructions / Notes</label><textarea class="form-control" id="rx-instructions" rows="2" placeholder="Additional instructions for the patient..."></textarea></div>
       <div class="modal-footer">

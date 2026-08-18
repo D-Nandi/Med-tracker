@@ -24,9 +24,16 @@
             </div>
             <div class="form-row">
               <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" type="date" id="dob"/></div>
-              <div class="form-group"><label class="form-label">Blood Group</label>
-                <select class="form-control" id="blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+              <div class="form-group"><label class="form-label">Gender</label>
+                <select class="form-control" id="gender">
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other / Prefer not to say</option>
+                </select>
               </div>
+            </div>
+            <div class="form-group"><label class="form-label">Blood Group</label>
+              <select class="form-control" id="blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
             </div>
             <div class="form-group"><label class="form-label">Allergies / Conditions</label><textarea class="form-control" id="allergies" rows="2" placeholder="e.g. Penicillin allergy, Hypertension..."></textarea></div>
             <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>

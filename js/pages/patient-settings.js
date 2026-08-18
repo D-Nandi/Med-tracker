@@ -61,6 +61,7 @@ async function loadProfile(uid) {
     setVal('name',      data.name      || '');
     setVal('phone',     data.phone     || '');
     setVal('dob',       data.dob       || '');
+    setVal('gender',    data.gender    || 'female');
     setVal('blood',     data.bloodGroup || '');
     setVal('allergies', data.allergies || '');
 
@@ -100,11 +101,12 @@ function bindEvents() {
 async function handleProfileSave(e) {
   e.preventDefault();
 
-  const name      = getVal('name').trim();
-  const phone     = getVal('phone').trim();
-  const dob       = getVal('dob').trim();
+  const name       = getVal('name').trim();
+  const phone      = getVal('phone').trim();
+  const dob        = getVal('dob').trim();
+  const gender     = getVal('gender') || 'female';
   const bloodGroup = getVal('blood');
-  const allergies = getVal('allergies').trim();
+  const allergies  = getVal('allergies').trim();
 
   /* ── Validation ── */
   if (!name) {
@@ -126,21 +128,26 @@ async function handleProfileSave(e) {
       name,
       phone,
       dob,
+      gender,
       bloodGroup,
       allergies
     });
 
-    /* ── Update displayed avatar & name ── */
-    const avatar = el('profile-avatar');
-    if (avatar) avatar.textContent = getInitials(name);
-
+    /* Update cached display name */
     const nameDisplay = el('profile-name');
     if (nameDisplay) nameDisplay.textContent = name;
 
-    toast.success('Profile updated!');
+    const avatar = el('profile-avatar');
+    if (avatar) avatar.textContent = getInitials(name);
+
+    // Refresh sidebar in case gender changed
+    userData.gender = gender;
+    renderSidebar(userData, 'settings');
+
+    toast.success('Profile updated successfully.');
   } catch (err) {
-    console.error('Profile save error:', err);
-    toast.error('Failed to update profile.');
+    console.error('Update profile error:', err);
+    toast.error('Failed to update profile. Please try again.');
   } finally {
     if (saveBtn) {
       saveBtn.disabled = false;

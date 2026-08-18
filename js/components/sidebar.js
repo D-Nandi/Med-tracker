@@ -55,7 +55,13 @@ function svgIcon(name, size = 20) {
 }
 
 export function renderSidebar(userData, activeId) {
-  const items = NAV_ITEMS[userData.role] || [];
+  let items = [...(NAV_ITEMS[userData.role] || [])];
+  
+  // Only show Period Tracker for female / non-male patients
+  if (userData.role === 'patient' && userData.gender === 'male') {
+    items = items.filter(item => item.id !== 'period-tracker');
+  }
+
   const currentPath = window.location.pathname;
   const initials = (userData.name || userData.email || 'U').slice(0, 2).toUpperCase();
   const roleLabel = { patient: 'Patient', doctor: 'Doctor', admin: 'Administrator' }[userData.role] || userData.role;

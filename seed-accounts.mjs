@@ -32,8 +32,18 @@ const accounts = [
     email:    'patient@meditrack.test',
     password: 'Patient@123',
     role:     'patient',
+    gender:   'female',
     phone:    '+91 98765 43210',
     dob:      '1995-06-15'
+  },
+  {
+    name:     'Rahul Verma',
+    email:    'patient.male@meditrack.test',
+    password: 'Patient@123',
+    role:     'patient',
+    gender:   'male',
+    phone:    '+91 98111 22334',
+    dob:      '1992-11-08'
   },
   {
     name:     'Dr. Arjun Mehta',
@@ -78,13 +88,14 @@ async function createAccount(account) {
       email:          account.email,
       phone:          account.phone || '',
       dob:            account.dob || '',
+      gender:         account.gender || '',
       role:           account.role,
       specialization: account.specialization || '',
       createdAt:      serverTimestamp(),
       avatar:         ''
     }, { merge: true });
 
-    console.log(`   Firestore doc written for role: ${account.role}`);
+    console.log(`   Firestore doc written for role: ${account.role} (${account.name})`);
   } catch (err) {
     console.error(`Failed for ${account.email}:`, err.message);
   }
@@ -95,7 +106,8 @@ for (const account of accounts) {
   await createAccount(account);
 }
 console.log('\nDone! Use these credentials to log in:\n');
-console.log('Patient  ->  patient@meditrack.test  /  Patient@123');
-console.log('Doctor   ->  doctor@meditrack.test   /  Doctor@123');
-console.log('Admin    ->  admin@meditrack.test    /  Admin@123');
+console.log('Patient (Female) ->  patient@meditrack.test       /  Patient@123');
+console.log('Patient (Male)   ->  patient.male@meditrack.test  /  Patient@123');
+console.log('Doctor           ->  doctor@meditrack.test        /  Doctor@123');
+console.log('Admin            ->  admin@meditrack.test         /  Admin@123');
 process.exit(0);

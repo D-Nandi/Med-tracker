@@ -43,41 +43,79 @@ function bindEvents() {
     });
   });
 
+  // Clear selected patient
+  document.getElementById('clear-appt-patient-btn')?.addEventListener('click', () => {
+    selectedPatient = null;
+    document.getElementById('appt-patient-id').value = '';
+    const selBox = document.getElementById('appt-selected-patient');
+    if (selBox) selBox.style.display = 'none';
+    const searchInput = document.getElementById('appt-patient-search');
+    if (searchInput) {
+      searchInput.style.display = 'block';
+      searchInput.value = '';
+      searchInput.focus();
+    }
+  });
+
   // Patient search
   const searchInput = document.getElementById('appt-patient-search');
   if (searchInput) {
-    searchInput.addEventListener('input', async () => {
-      const q = searchInput.value.trim().toLowerCase();
-      if (q.length < 2) { hidePatientResults(); return; }
+    const triggerSearch = async () => {
       if (allPatientsList.length === 0) {
         try { allPatientsList = await getAllPatients(); } catch { return; }
       }
-      const filtered = allPatientsList.filter(p => (p.name||'').toLowerCase().includes(q) || (p.email||'').toLowerCase().includes(q));
+      const q = searchInput.value.trim().toLowerCase();
+      const filtered = q
+        ? allPatientsList.filter(p => (p.name || '').toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q))
+        : allPatientsList;
       showPatientResults(filtered);
+    };
+
+    searchInput.addEventListener('input', triggerSearch);
+    searchInput.addEventListener('focus', triggerSearch);
+    searchInput.addEventListener('click', triggerSearch);
+    
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#appt-patient-search') && !e.target.closest('#appt-patient-results')) {
+        hidePatientResults();
+      }
     });
-    searchInput.addEventListener('blur', () => setTimeout(hidePatientResults, 200));
   }
 }
 
 function showPatientResults(patients) {
   const el = document.getElementById('appt-patient-results');
-  if (!patients.length) { el.style.display = 'none'; return; }
+  if (!el) return;
+  if (!patients.length) {
+    el.style.display = 'block';
+    el.innerHTML = `<div style="padding:12px;font-size:0.875rem;color:var(--color-muted-text);text-align:center;">No patients found</div>`;
+    return;
+  }
   el.style.display = 'block';
-  el.innerHTML = patients.slice(0, 8).map(p => `
-    <div class="patient-result-item" data-id="${p.id}" data-name="${esc(p.name||'')}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--color-border);font-size:0.875rem;">
-      <strong>${esc(p.name || 'Unknown')}</strong><br><span style="color:var(--color-muted-text);font-size:0.8rem;">${esc(p.email || '')}</span>
+  el.innerHTML = patients.slice(0, 10).map(p => `
+    <div class="patient-result-item" data-id="${p.id}" data-name="${esc(p.name || p.email || 'Patient')}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--color-border);font-size:0.875rem;transition:background 0.15s ease;">
+      <div style="font-weight:600;color:var(--color-foreground);">${esc(p.name || 'Unnamed Patient')}</div>
+      <div style="color:var(--color-muted-text);font-size:0.8rem;margin-top:2px;">${esc(p.email || '')} ${p.phone ? '• ' + esc(p.phone) : ''}</div>
     </div>
   `).join('');
   el.querySelectorAll('.patient-result-item').forEach(item => {
-    item.addEventListener('mouseenter', () => item.style.background = 'var(--color-muted)');
+    item.addEventListener('mouseenter', () => item.style.background = 'var(--color-primary-light)');
     item.addEventListener('mouseleave', () => item.style.background = '');
     item.addEventListener('click', () => {
       selectedPatient = { id: item.dataset.id, name: item.dataset.name };
       document.getElementById('appt-patient-id').value = item.dataset.id;
-      document.getElementById('appt-patient-search').value = '';
+      const searchInput = document.getElementById('appt-patient-search');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.style.display = 'none';
+      }
       const sel = document.getElementById('appt-selected-patient');
-      sel.textContent = `Selected: ${item.dataset.name}`;
-      sel.style.display = 'block';
+      const selText = document.getElementById('appt-selected-patient-text');
+      if (sel && selText) {
+        selText.textContent = `Patient: ${item.dataset.name}`;
+        sel.style.display = 'flex';
+      }
       hidePatientResults();
     });
   });

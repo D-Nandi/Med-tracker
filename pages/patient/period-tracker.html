@@ -411,10 +411,19 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 const todayStr = toISO(today);
 
-/* ── Bootstrap ─────────────────────────────────────────────── */
 async function init() {
   try {
     userData = await requireAuth(['patient']);
+    
+    // Male patient guard: feature is only available for female patients
+    if (userData.gender === 'male') {
+      toast.warning('The Period & Cycle Tracker is only available for female patient accounts.');
+      setTimeout(() => {
+        window.location.href = '/pages/patient/dashboard.html';
+      }, 1000);
+      return;
+    }
+
     renderSidebar(userData, 'period-tracker');
     renderTopbar('Period Tracker', userData);
     
