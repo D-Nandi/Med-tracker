@@ -99,10 +99,24 @@ export function renderSidebar(userData, activeId) {
     </div>
   `;
 
+function resolvePath(targetPath) {
+  const p = window.location.pathname;
+  const idx = p.indexOf('/pages/');
+  if (idx > 0) {
+    const base = p.substring(0, idx);
+    return base + (targetPath.startsWith('/') ? targetPath : '/' + targetPath);
+  }
+  const segments = p.split('/').filter(Boolean);
+  if (segments.length > 0 && !['pages', 'css', 'js'].includes(segments[0]) && !segments[0].includes('.')) {
+    return '/' + segments[0] + (targetPath.startsWith('/') ? targetPath : '/' + targetPath);
+  }
+  return targetPath;
+}
+
   // Nav item click handlers
   sidebarEl.querySelectorAll('.nav-item[data-href]').forEach(btn => {
     btn.addEventListener('click', () => {
-      window.location.href = btn.dataset.href;
+      window.location.href = resolvePath(btn.dataset.href);
     });
   });
 
@@ -110,7 +124,7 @@ export function renderSidebar(userData, activeId) {
   document.getElementById('logout-btn')?.addEventListener('click', async () => {
     try {
       await signOut(auth);
-      window.location.href = '/index.html';
+      window.location.href = resolvePath('/index.html');
     } catch {
       toast.error('Failed to sign out. Please try again.');
     }

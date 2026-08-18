@@ -435,8 +435,7 @@
   <script type="module">
     import { auth, db } from "../js/firebase/init.js";
     import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { redirectIfLoggedIn } from "../js/components/auth-guard.js";
+    import { redirectIfLoggedIn, resolvePath } from "../js/components/auth-guard.js";
     import toast from "../js/components/toast.js";
 
     // Demo credential auto-fill — registered after selectedRole is declared below
@@ -516,9 +515,9 @@
         }
         toast.success('Login successful! Redirecting...');
         setTimeout(() => {
-          if (role === 'patient') window.location.href = '/pages/patient/dashboard.html';
-          else if (role === 'doctor') window.location.href = '/pages/doctor/dashboard.html';
-          else if (role === 'admin') window.location.href = '/pages/admin/dashboard.html';
+          if (role === 'patient') window.location.href = resolvePath('/pages/patient/dashboard.html');
+          else if (role === 'doctor') window.location.href = resolvePath('/pages/doctor/dashboard.html');
+          else if (role === 'admin') window.location.href = resolvePath('/pages/admin/dashboard.html');
         }, 800);
       } catch (err) {
         btn.disabled = false;

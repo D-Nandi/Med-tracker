@@ -419,7 +419,7 @@ async function init() {
     if (userData.gender === 'male') {
       toast.warning('The Period & Cycle Tracker is only available for female patient accounts.');
       setTimeout(() => {
-        window.location.href = '/pages/patient/dashboard.html';
+        window.location.href = 'dashboard.html';
       }, 1000);
       return;
     }
